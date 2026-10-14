@@ -1,0 +1,58 @@
+---
+/**
+ * Logo "Crazy." in SVG (direzione B, la z fuori riga).
+ * Le lettere prendono il colore del testo (currentColor), il punto è viola
+ * (--logo-dot per cambiarlo, per esempio bianco su fondo viola).
+ * hover: al passaggio del mouse sul link che lo contiene la z dondola
+ * e il punto fa un saltello (versione breve dell'animazione).
+ * playable: aggiunge un secondo punto dietro le lettere e i riferimenti per
+ * logo-play.ts, che al clic rifà il calcio e l'orbita (usato nel footer).
+ */
+import { LOGO } from '../data/logo';
+interface Props { class?: string; label?: string; dot?: boolean; hover?: boolean; playable?: boolean }
+const { class: cls, label = 'Crazy.', dot = true, hover = false, playable = false } = Astro.props;
+const dotAt = `translate(${LOGO.dot.x} ${LOGO.dot.y})`;
+const [vx, vy, vw, vh] = LOGO.viewBox;
+const z = LOGO.letters.find((l) => l.ch === 'z')!;
+---
+<svg
+  class:list={['logo', hover && 'logo--hover', cls]}
+  viewBox={`${vx} ${vy} ${vw} ${vh}`}
+  role={label ? 'img' : undefined}
+  aria-label={label || undefined}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+>
+  {playable && <circle class="logo__dot" data-dot="back" r={LOGO.dot.r} transform={dotAt} style="opacity: 0" />}
+  <g transform={`translate(0 ${LOGO.baseline}) scale(1 -1)`} fill="currentColor">
+    {LOGO.letters.filter((l) => l.ch !== 'z').map((l) => <path transform={`translate(${l.x} 0)`} d={l.d} />)}
+    <g class="logo__z"><path data-logo-z transform={`translate(${z.x} 0) rotate(${LOGO.zTilt} ${LOGO.zPivot[0]} ${LOGO.zPivot[1]})`} d={z.d} /></g>
+  </g>
+  {dot && (playable
+    ? <circle class="logo__dot" data-dot="front" r={LOGO.dot.r} transform={dotAt} />
+    : <circle class="logo__dot" cx={LOGO.dot.x} cy={LOGO.dot.y} r={LOGO.dot.r} />)}
+</svg>
+<style>
+  .logo { display: block; height: 1em; width: auto; aspect-ratio: 3900 / 1010; overflow: visible; }
+  .logo__dot { fill: var(--logo-dot, var(--violet)); }
+  .logo__z, .logo__dot { transform-box: fill-box; }
+  .logo__z { transform-origin: 50% 0%; }
+  .logo__dot { transform-origin: 50% 100%; }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    :global(a:hover) > .logo--hover .logo__z { animation: logoWobble 900ms cubic-bezier(.45, 0, .2, 1); }
+    :global(a:hover) > .logo--hover .logo__dot { animation: logoHop 900ms ease-out; }
+  }
+  @keyframes logoWobble {
+    0%, 100% { transform: rotate(0); }
+    22% { transform: rotate(14deg); }
+    48% { transform: rotate(-8deg); }
+    72% { transform: rotate(3deg); }
+  }
+  @keyframes logoHop {
+    0%, 30%, 100% { transform: translateY(0) scale(1); }
+    48% { transform: translateY(-160px) scale(.95, 1.05); animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
+    64% { transform: translateY(0) scale(1.2, .82); }
+    76% { transform: translateY(0) scale(.96, 1.04); }
+    88% { transform: translateY(0) scale(1); }
+  }
+</style>

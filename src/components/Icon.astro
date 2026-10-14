@@ -1,0 +1,29 @@
+---
+/** Icone Phosphor, peso light, inline. Un solo set, un solo peso. */
+import iarrow_up_right from '@phosphor-icons/core/assets/light/arrow-up-right-light.svg?raw';
+import iarrow_right from '@phosphor-icons/core/assets/light/arrow-right-light.svg?raw';
+import iarrow_left from '@phosphor-icons/core/assets/light/arrow-left-light.svg?raw';
+import iarrow_down from '@phosphor-icons/core/assets/light/arrow-down-light.svg?raw';
+import ilist from '@phosphor-icons/core/assets/light/list-light.svg?raw';
+import ix from '@phosphor-icons/core/assets/light/x-light.svg?raw';
+import icheck from '@phosphor-icons/core/assets/light/check-light.svg?raw';
+import iplay from '@phosphor-icons/core/assets/light/play-light.svg?raw';
+import ishopping_bag from '@phosphor-icons/core/assets/light/shopping-bag-light.svg?raw';
+import imagnifying_glass from '@phosphor-icons/core/assets/light/magnifying-glass-light.svg?raw';
+import ibrowser from '@phosphor-icons/core/assets/light/browser-light.svg?raw';
+import isparkle from '@phosphor-icons/core/assets/light/sparkle-light.svg?raw';
+import ilightning from '@phosphor-icons/core/assets/light/lightning-light.svg?raw';
+import ichat_circle_dots from '@phosphor-icons/core/assets/light/chat-circle-dots-light.svg?raw';
+import istar from '@phosphor-icons/core/assets/light/star-light.svg?raw';
+import icursor_click from '@phosphor-icons/core/assets/light/cursor-click-light.svg?raw';
+import iplus from '@phosphor-icons/core/assets/light/plus-light.svg?raw';
+import iminus from '@phosphor-icons/core/assets/light/minus-light.svg?raw';
+import iwhatsapp_logo from '@phosphor-icons/core/assets/light/whatsapp-logo-light.svg?raw';
+import imap_pin from '@phosphor-icons/core/assets/light/map-pin-light.svg?raw';
+const icons = { 'map-pin': imap_pin, 'whatsapp-logo': iwhatsapp_logo, 'arrow-up-right': iarrow_up_right, 'arrow-right': iarrow_right, 'arrow-left': iarrow_left, 'arrow-down': iarrow_down, 'list': ilist, 'x': ix, 'check': icheck, 'play': iplay, 'shopping-bag': ishopping_bag, 'magnifying-glass': imagnifying_glass, 'browser': ibrowser, 'sparkle': isparkle, 'lightning': ilightning, 'chat-circle-dots': ichat_circle_dots, 'star': istar, 'cursor-click': icursor_click, 'plus': iplus, 'minus': iminus };
+export type IconName = keyof typeof icons;
+interface Props { name: IconName; class?: string }
+const { name, class: cls } = Astro.props;
+const svg = icons[name].replace('<svg ', `<svg aria-hidden="true" focusable="false" fill="currentColor"${cls ? ` class="${cls}"` : ''} `);
+---
+<Fragment set:html={svg} />

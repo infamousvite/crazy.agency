@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import Cta from '../components/Cta.astro';
+import { alt } from '../i18n';
+---
+<Base lang="it" title="Pagina non trovata" description="Questa pagina non esiste." alternates={alt('home')} noindex>
+  <section class="nf">
+    <div class="wrap">
+      <p class="nf__code" aria-hidden="true">40<span class="tilt" style="--tilt: 14deg">4</span></p>
+      <h1>Questa pagina è andata fuori di testa.</h1>
+      <p class="lead">La pagina che cerchi non c'è più, o non c'è mai stata. This page doesn't exist.</p>
+      <div class="nf__ctas">
+        <Cta href="/it/" label="Torna alla home" icon="arrow-right" />
+        <a class="textlink" href="/en/">English</a>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .nf { min-height: 90dvh; display: grid; align-items: center; padding-top: 6rem; }
+  .nf__code { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.06em; line-height: .9; font-size: clamp(5.5rem, 18vw, 13rem); color: transparent; -webkit-text-stroke: 1.5px var(--violet); }
+  .nf h1 { font-size: var(--fs-h2); margin: 1.2rem 0 1rem; max-width: 18ch; }
+  .nf__ctas { display: flex; align-items: center; gap: 1.5rem; margin-top: 2rem; flex-wrap: wrap; }
+</style>

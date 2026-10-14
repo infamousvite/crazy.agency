@@ -1,0 +1,8 @@
+---
+import Base from '../../layouts/Base.astro';
+import LegalView from '../../views/LegalView.astro';
+import { alt } from '../../i18n';
+---
+<Base lang="en" title="Cookie policy" description="Crazy. cookie policy." alternates={alt('cookies')} noindex>
+  <LegalView lang="en" kind="cookies" />
+</Base>

@@ -1,0 +1,10 @@
+---
+/** Bottone pillola con l'icona nella sua isola. */
+import Icon, { type IconName } from './Icon.astro';
+interface Props { href: string; label: string; ghost?: boolean; icon?: IconName; class?: string }
+const { href, label, ghost = false, icon = 'arrow-up-right', class: cls } = Astro.props;
+---
+<a class:list={['btn', ghost && 'btn--ghost', cls]} href={href}>
+  <span>{label}</span>
+  <span class="btn__icon"><Icon name={icon} /></span>
+</a>

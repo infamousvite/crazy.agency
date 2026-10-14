@@ -1,0 +1,162 @@
+---
+/**
+ * Privacy e cookie policy.
+ * Testi scritti per com'è fatto il sito oggi: nessuna statistica, nessun cookie
+ * di profilazione, font e video sul nostro server, form del preventivo che
+ * (per ora) apre il programma di posta. Ragione sociale, P.IVA ed email
+ * arrivano da site.ts: finché sono vuote le righe restano nascoste.
+ * DA COMPLETARE prima della messa online: dati del titolare, fornitore di
+ * hosting/email, e una rilettura da parte di un consulente o del commercialista.
+ */
+import { t, type Lang } from '../i18n';
+import { site, whatsappLabel } from '../data/site';
+interface Props { lang: Lang; kind: 'privacy' | 'cookies' }
+const { lang, kind } = Astro.props;
+const L = <T,>(v: { it: T; en: T }) => t(lang, v);
+const title = kind === 'privacy' ? 'Privacy policy' : 'Cookie policy';
+const updated = L({ it: 'Ultimo aggiornamento: ottobre 2026.', en: 'Last updated: October 2026.' });
+const contacts = [
+  site.emailConfirmed ? site.email : '',
+  site.whatsapp ? `WhatsApp ${whatsappLabel(site.whatsapp)}` : '',
+].filter(Boolean).join(L({ it: ' oppure ', en: ' or ' }));
+
+type Sec = { h: string; p: string[] };
+const privacy: Sec[] = [
+  {
+    h: L({ it: 'Chi tratta i tuoi dati', en: 'Who handles your data' }),
+    p: [
+      L({
+        it: `Titolare del trattamento è ${site.legalName}, ${site.city} (VI), Italia${site.vat ? `, ${site.vat}` : ''}.${contacts ? ` Per qualsiasi domanda sulla privacy puoi scriverci: ${contacts}.` : ''}`,
+        en: `The data controller is ${site.legalName}, ${site.city} (Vicenza), Italy${site.vat ? `, ${site.vat}` : ''}.${contacts ? ` For any privacy question you can write to us: ${contacts}.` : ''}`,
+      }),
+    ],
+  },
+  {
+    h: L({ it: 'Quali dati raccogliamo', en: 'What data we collect' }),
+    p: [
+      L({
+        it: 'Configuratore del preventivo: tipo di sito, tempi, nome, cognome, azienda (facoltativa), email, telefono (facoltativo) e le note che scrivi. Li riceviamo solo quando invii la richiesta.',
+        en: 'Quote configurator: type of site, timing, first name, last name, company (optional), email, phone (optional) and any notes you write. We only receive them when you send the request.',
+      }),
+      L({
+        it: 'Messaggi su WhatsApp o via email: il tuo numero o indirizzo e quello che ci scrivi.',
+        en: 'WhatsApp or email messages: your number or address and what you write to us.',
+      }),
+      L({
+        it: 'Dati tecnici di navigazione: come ogni sito, il server che lo ospita registra in automatico indirizzo IP, data e pagina visitata, per motivi di sicurezza. Non li usiamo per sapere chi sei.',
+        en: 'Technical browsing data: like any website, the server hosting it automatically logs IP address, date and page visited, for security reasons. We do not use them to identify you.',
+      }),
+    ],
+  },
+  {
+    h: L({ it: 'Perché li usiamo', en: 'Why we use them' }),
+    p: [
+      L({
+        it: 'Per risponderti e prepararti il preventivo che hai chiesto (misure precontrattuali, art. 6.1.b GDPR); per lavorare al tuo sito se diventi cliente (contratto, art. 6.1.b); per gli obblighi fiscali e contabili (obbligo di legge, art. 6.1.c); per tenere il sito sicuro (legittimo interesse, art. 6.1.f).',
+        en: 'To reply and prepare the quote you asked for (pre-contractual measures, Art. 6(1)(b) GDPR); to work on your website if you become a client (contract, Art. 6(1)(b)); for tax and accounting obligations (legal obligation, Art. 6(1)(c)); to keep the site secure (legitimate interest, Art. 6(1)(f)).',
+      }),
+      L({
+        it: 'Non facciamo profilazione, non mandiamo newsletter senza il tuo permesso e non vendiamo né cediamo i tuoi dati a nessuno.',
+        en: 'We do no profiling, send no newsletters without your permission, and never sell or give away your data.',
+      }),
+    ],
+  },
+  {
+    h: L({ it: 'Per quanto tempo', en: 'How long we keep them' }),
+    p: [
+      L({
+        it: 'Le richieste di preventivo che non diventano un lavoro le cancelliamo entro 12 mesi. I dati legati a un incarico li teniamo per 10 anni, come chiede la legge per i documenti contabili. I log tecnici restano per il tempo previsto dal fornitore di hosting.',
+        en: 'Quote requests that do not turn into a project are deleted within 12 months. Data tied to a project is kept for 10 years, as Italian law requires for accounting records. Technical logs are kept for the period set by the hosting provider.',
+      }),
+    ],
+  },
+  {
+    h: L({ it: 'Chi altro li vede', en: 'Who else sees them' }),
+    p: [
+      L({
+        it: 'Solo chi ci aiuta a lavorare: il fornitore di hosting e della posta elettronica e, per le fatture, il commercialista. Se ci scrivi su WhatsApp, il messaggio passa anche da WhatsApp (Meta), che lo tratta secondo la sua informativa e può trasferire dati fuori dall’Unione europea.',
+        en: 'Only those who help us work: the hosting and email provider and, for invoices, our accountant. If you message us on WhatsApp, the message also goes through WhatsApp (Meta), which handles it under its own policy and may transfer data outside the European Union.',
+      }),
+    ],
+  },
+  {
+    h: L({ it: 'I tuoi diritti', en: 'Your rights' }),
+    p: [
+      L({
+        it: 'Puoi chiederci in qualsiasi momento di vedere, correggere, cancellare o esportare i tuoi dati, di limitarne l’uso o di smettere di usarli (artt. 15-22 GDPR). Ti rispondiamo entro un mese. Se pensi che non li trattiamo correttamente, puoi rivolgerti al Garante per la protezione dei dati personali (garanteprivacy.it).',
+        en: 'You can ask us at any time to see, correct, delete or export your data, to restrict its use or to stop using it (Arts. 15-22 GDPR). We reply within one month. If you think we are not handling it properly, you can contact the Italian Data Protection Authority (garanteprivacy.it).',
+      }),
+    ],
+  },
+];
+
+const cookies: Sec[] = [
+  {
+    h: L({ it: 'In breve', en: 'In short' }),
+    p: [
+      L({
+        it: 'Questo sito non usa cookie di profilazione, pubblicità o statistiche, e non ti segue da un sito all’altro. Per questo non trovi il banner dei cookie.',
+        en: 'This site uses no profiling, advertising or analytics cookies, and does not follow you from site to site. That is why there is no cookie banner.',
+      }),
+    ],
+  },
+  {
+    h: L({ it: 'Cosa sono i cookie', en: 'What cookies are' }),
+    p: [
+      L({
+        it: 'Piccoli file che un sito salva nel browser. Quelli tecnici servono a far funzionare il sito e non richiedono il consenso; quelli di profilazione servono a tracciarti e lo richiedono.',
+        en: 'Small files a website stores in your browser. Technical ones make the site work and need no consent; profiling ones track you and do.',
+      }),
+    ],
+  },
+  {
+    h: L({ it: 'Cosa usa questo sito', en: 'What this site uses' }),
+    p: [
+      L({
+        it: 'Al massimo i cookie tecnici che il fornitore di hosting può impostare per sicurezza e prestazioni. Caratteri, immagini e video sono sul nostro server: aprendo una pagina non contatti servizi esterni come Google Fonts o YouTube.',
+        en: 'At most the technical cookies the hosting provider may set for security and performance. Fonts, images and videos are served from our own server: opening a page does not contact external services such as Google Fonts or YouTube.',
+      }),
+    ],
+  },
+  {
+    h: L({ it: 'Link ad altri siti', en: 'Links to other sites' }),
+    p: [
+      L({
+        it: 'Il pulsante WhatsApp, i siti dei nostri clienti e le anteprime del laboratorio si aprono su siti di terze parti, che hanno le loro regole sui cookie.',
+        en: 'The WhatsApp button, our clients’ websites and the lab previews open third-party sites, which have their own cookie rules.',
+      }),
+    ],
+  },
+  {
+    h: L({ it: 'Come gestirli', en: 'How to manage them' }),
+    p: [
+      L({
+        it: 'Puoi vedere e cancellare i cookie dalle impostazioni del browser. Se un giorno aggiungeremo statistiche o altri strumenti, aggiorneremo questa pagina e, se serve, ti chiederemo il consenso.',
+        en: 'You can view and delete cookies in your browser settings. If we ever add analytics or other tools, we will update this page and ask for your consent where required.',
+      }),
+    ],
+  },
+];
+const sections = kind === 'privacy' ? privacy : cookies;
+---
+<section class="page-hero">
+  <div class="wrap legal">
+    <h1>{title}</h1>
+    <div class="legal__body">
+      {sections.map((s) => (
+        <section>
+          <h2>{s.h}</h2>
+          {s.p.map((p) => <p>{p}</p>)}
+        </section>
+      ))}
+      <p class="legal__updated">{updated}</p>
+    </div>
+  </div>
+</section>
+<style>
+  .legal h1 { font-size: var(--fs-display); }
+  .legal__body { max-width: 70ch; display: grid; gap: 1.6rem; margin-top: clamp(2rem, 4vw, 3rem); color: var(--ink-2); padding-bottom: 6rem; }
+  .legal__body section { display: grid; gap: .7rem; }
+  .legal__body h2 { font-size: 1.3rem; color: var(--ink); letter-spacing: -0.03em; }
+  .legal__updated { color: var(--muted); font-size: .9rem; margin-top: 1rem; }
+</style>

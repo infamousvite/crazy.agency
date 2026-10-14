@@ -1,0 +1,231 @@
+---
+import { url, ui, t, type Lang } from '../i18n';
+import { site, pricing, formatEuro, whatsappLabel } from '../data/site';
+import Icon from '../components/Icon.astro';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const L = <T,>(v: { it: T; en: T }) => t(lang, v);
+const eur = (n: number) => formatEuro(n, lang);
+const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT || '';
+
+const types = [
+  { v: 'landing', price: pricing.landing, title: 'Landing page', text: L({ it: 'Una pagina sola, perfetta per un prodotto, un evento o per partire subito.', en: 'A single page, perfect for a product, an event or getting started fast.' }) },
+  { v: 'multipage', price: pricing.multipage, title: L({ it: 'Sito multipagina', en: 'Multi-page website' }), text: L({ it: 'Home, servizi, chi siamo, contatti e tutte le pagine che ti servono.', en: 'Home, services, about, contact and every page you need.' }) },
+  { v: 'ecommerce', price: pricing.ecommerce, title: L({ it: 'Sito + e-commerce', en: 'Website + e-commerce' }), text: L({ it: 'Il sito completo con negozio online, pagamenti e gestione ordini.', en: 'The full website plus an online shop, payments and orders.' }) },
+  { v: 'other', price: 0, title: L({ it: 'Altro / non so', en: 'Something else' }), text: L({ it: 'Hai un’idea diversa o vuoi un consiglio? Ne parliamo insieme.', en: 'A different idea, or need advice? Let’s talk it through.' }) },
+];
+const timings = [
+  { v: 'asap', label: L({ it: 'Il prima possibile', en: 'As soon as possible' }) },
+  { v: '1m', label: L({ it: 'Entro un mese', en: 'Within a month' }) },
+  { v: '3m', label: L({ it: 'Entro tre mesi', en: 'Within three months' }) },
+  { v: 'flex', label: L({ it: 'Nessuna fretta', en: 'No rush' }) },
+];
+const stepNames = L({ it: ['Progetto', 'Tempi', 'Contatti'], en: ['Project', 'Timing', 'Contact'] });
+const i18n = {
+  from: t(lang, ui.common.from),
+  required: L({ it: 'Scegli un’opzione per continuare.', en: 'Pick an option to continue.' }),
+  name: L({ it: 'Scrivi il tuo nome.', en: 'Please enter your first name.' }),
+  surname: L({ it: 'Scrivi il tuo cognome.', en: 'Please enter your last name.' }),
+  lastStep: L({ it: 'Ultimo passo.', en: 'One last step.' }),
+  email: L({ it: 'Serve un’email valida.', en: 'Please enter a valid email.' }),
+  privacy: L({ it: 'Serve il consenso per poterti rispondere.', en: 'We need your consent to reply.' }),
+  sending: L({ it: 'Invio in corso…', en: 'Sending…' }),
+  error: L({ it: 'Qualcosa è andato storto. Riprova o scrivici a ', en: 'Something went wrong. Try again or email us at ' }),
+  none: L({ it: 'Nessuno', en: 'None' }),
+  talk: L({ it: 'Da definire insieme', en: 'To be discussed' }),
+  subject: L({ it: 'Richiesta preventivo dal sito', en: 'Quote request from the website' }),
+  labels: {
+    type: L({ it: 'Progetto', en: 'Project' }), timing: L({ it: 'Tempi', en: 'Timing' }),
+    current: L({ it: 'Sito attuale', en: 'Current site' }), name: L({ it: 'Nome', en: 'First name' }), surname: L({ it: 'Cognome', en: 'Last name' }), company: L({ it: 'Azienda', en: 'Company' }),
+    email: 'Email', phone: L({ it: 'Telefono', en: 'Phone' }), message: L({ it: 'Note', en: 'Notes' }), price: L({ it: 'Prezzo di partenza', en: 'Starting price' }),
+  },
+  email_to: site.email,
+  endpoint,
+  locale: lang === 'it' ? 'it-IT' : 'en-GB',
+};
+---
+<section class="page-hero contact-hero">
+  <div class="wrap">
+    <h1>{L({ it: 'Raccontaci il tuo progetto.', en: 'Tell us about your project.' })}</h1>
+    <p class="lead">{L({ it: 'Tre domande veloci: che sito ti serve, quando vuoi partire e come ti contattiamo. Ti rispondiamo con un preventivo su misura.', en: 'Three quick questions: what site you need, when you want to start and how to reach you. We reply with a tailored quote.' })}</p>
+    {site.whatsapp && <p class="contact-wa"><Icon name="whatsapp-logo" /> {L({ it: 'Preferisci scrivere subito?', en: 'Rather write right away?' })} <a href={`https://wa.me/${site.whatsapp}`} target="_blank" rel="noopener">WhatsApp {whatsappLabel(site.whatsapp)}</a></p>}
+  </div>
+</section>
+
+<section class="wrap contact-body">
+  <form class="quote" data-quote novalidate action={endpoint || undefined} method="post">
+    <ol class="quote__steps" aria-hidden="true">
+      {stepNames.map((s, i) => <li data-qdot={i} class:list={{ on: i === 0 }}><span>0{i + 1}</span>{s}</li>)}
+    </ol>
+
+    <div class="quote__panes">
+      <fieldset class="qstep is-active" data-qstep="0">
+        <legend>{L({ it: 'Che cosa vuoi realizzare?', en: 'What do you want to build?' })}</legend>
+        <div class="choices choices--big">
+          {types.map((o) => (
+            <label class="choice">
+              <input type="radio" name="type" value={o.v} data-price={o.price} data-label={o.title} required />
+              <span class="choice__box">
+                <span class="choice__top">
+                  <span class="choice__title">{o.title}</span>
+                  <span class="choice__price">{o.price ? `${t(lang, ui.common.from)} ${eur(o.price)}` : t(lang, { it: 'ne parliamo', en: 'let’s talk' })}</span>
+                </span>
+                <span class="choice__text">{o.text}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+        <p class="qerr" role="alert" data-err></p>
+      </fieldset>
+
+      <fieldset class="qstep" data-qstep="1">
+        <legend>{L({ it: 'Quando vuoi partire?', en: 'When do you want to start?' })}</legend>
+        <div class="choices choices--pills">
+          {timings.map((o) => (
+            <label class="pill"><input type="radio" name="timing" value={o.v} data-label={o.label} /><span>{o.label}</span></label>
+          ))}
+        </div>
+        <label class="field">
+          <span>{L({ it: 'Hai già un sito? Incolla l’indirizzo (facoltativo)', en: 'Already have a website? Paste the link (optional)' })}</span>
+          <input type="url" name="current" inputmode="url" placeholder="https://" autocomplete="url" />
+        </label>
+      </fieldset>
+
+      <fieldset class="qstep" data-qstep="2">
+        <legend>{L({ it: 'Come ti contattiamo?', en: 'How do we reach you?' })}</legend>
+        <div class="fields">
+          <label class="field"><span>{i18n.labels.name} *</span><input name="name" autocomplete="given-name" required /></label>
+          <label class="field"><span>{i18n.labels.surname} *</span><input name="surname" autocomplete="family-name" required /></label>
+          <label class="field"><span>{i18n.labels.company} <em>{L({ it: '(facoltativo)', en: '(optional)' })}</em></span><input name="company" autocomplete="organization" /></label>
+          <label class="field"><span>Email *</span><input type="email" name="email" autocomplete="email" required /></label>
+          <label class="field field--wide"><span>{i18n.labels.phone} <em>{L({ it: '(facoltativo)', en: '(optional)' })}</em></span><input type="tel" name="phone" autocomplete="tel" /></label>
+          <label class="field field--wide"><span>{L({ it: 'Note aggiuntive', en: 'Anything else' })} <em>{L({ it: '(facoltativo)', en: '(optional)' })}</em></span><textarea name="message" rows="4" placeholder={L({ it: 'Che attività hai, cosa vorresti dal sito, siti che ti piacciono…', en: 'What your business does, what you want from the site, sites you like…' })}></textarea></label>
+        </div>
+        <label class="consent">
+          <input type="checkbox" name="privacy" required />
+          <span>{L({ it: 'Ho letto la ', en: 'I have read the ' })}<a href={url(lang, 'privacy')} target="_blank">{L({ it: 'privacy policy', en: 'privacy policy' })}</a>{L({ it: ' e acconsento a essere ricontattato.', en: ' and agree to be contacted.' })} *</span>
+        </label>
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
+        <p class="qerr" role="alert" data-err></p>
+      </fieldset>
+
+      <div class="qdone" data-done hidden tabindex="-1">
+        <p class="qdone__big" data-done-title>{L({ it: 'Ricevuto.', en: 'Got it.' })}</p>
+        <p class="lead">{L({ it: 'Grazie, ti rispondiamo con un preventivo su misura.', en: 'Thanks, we’ll get back to you with a tailored quote.' })}</p>
+        <p class="muted" data-done-mail hidden>{L({ it: 'Si è aperto il tuo programma di posta con il riepilogo: premi Invia per spedircelo.', en: 'Your email app opened with the summary: hit Send to deliver it.' })}</p>
+      </div>
+    </div>
+
+    <div class="quote__nav" data-qnav>
+      <button type="button" class="btn btn--ghost btn--back" data-prev hidden><span class="btn__icon"><Icon name="arrow-left" /></span><span>{L({ it: 'Indietro', en: 'Back' })}</span></button>
+      <button type="button" class="btn" data-next><span>{L({ it: 'Avanti', en: 'Next' })}</span><span class="btn__icon"><Icon name="arrow-right" /></span></button>
+      <button type="submit" class="btn" data-submit hidden><span>{L({ it: 'Invia la richiesta', en: 'Send the request' })}</span><span class="btn__icon"><Icon name="arrow-up-right" /></span></button>
+    </div>
+  </form>
+
+  <aside class="summary" aria-live="polite">
+    <p class="summary__title">{L({ it: 'Il tuo progetto', en: 'Your project' })}</p>
+    <p class="summary__price"><small>{i18n.labels.price}</small><strong data-sum-price class="tnum">-</strong></p>
+    <dl class="summary__list">
+      <div><dt>{i18n.labels.type}</dt><dd data-sum-type>-</dd></div>
+      <div><dt>{i18n.labels.timing}</dt><dd data-sum-timing>-</dd></div>
+    </dl>
+    <p class="summary__note">{L({ it: 'Prezzo di partenza, IVA esclusa. Quello finale dipende da pagine, contenuti e tempi.', en: 'Starting price, VAT excluded. The final one depends on pages, content and timing.' })}</p>
+    <p class="summary__note">{L({ it: `Dopo la consegna, il mantenimento (hosting, dominio e piccole modifiche) parte da ${formatEuro(pricing.care, lang)} all’anno.`, en: `After launch, upkeep (hosting, domain and small changes) starts at ${formatEuro(pricing.care, lang)} a year.` })}</p>
+    {(site.emailConfirmed || site.whatsapp) && (
+    <div class="summary__direct">
+      <p>{L({ it: 'Preferisci scriverci?', en: 'Prefer to write?' })}</p>
+      {site.emailConfirmed && <a href={`mailto:${site.email}`}>{site.email}</a>}
+      {site.whatsapp && <a href={`https://wa.me/${site.whatsapp}`}>WhatsApp</a>}
+    </div>
+    )}
+  </aside>
+</section>
+
+<script type="application/json" id="quote-i18n" set:html={JSON.stringify(i18n)} />
+
+<style>
+  .contact-hero { padding-bottom: 2rem; }
+  .contact-wa { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: 1.2rem; color: var(--ink-2); }
+  .contact-wa :global(svg) { width: 1.2rem; height: 1.2rem; color: var(--violet-ink); }
+  .contact-wa a { display: inline-flex; align-items: center; min-height: 2.75rem; font-weight: 600; color: var(--ink); }
+  .contact-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; padding-bottom: clamp(5rem, 10vw, 8rem); align-items: start; }
+  @media (min-width: 1000px) { .contact-body { grid-template-columns: minmax(0, 1fr) 340px; gap: 2rem; } .summary { position: sticky; top: 6rem; } }
+
+  .quote { min-width: 0; background: var(--panel); border-radius: var(--r-lg); padding: clamp(1.25rem, 3vw, 2.5rem); box-shadow: inset 0 0 0 1px var(--line), inset 0 1px 0 rgb(255 255 255 / 0.05); }
+  .quote__steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin-bottom: 2rem; }
+  .quote__steps li { display: grid; gap: .25rem; padding-top: .8rem; box-shadow: inset 0 2px 0 var(--panel-3); font-size: .9rem; color: var(--muted); transition: color 200ms ease, box-shadow 200ms ease; min-width: 0; }
+  .quote__steps li span { font-size: .8rem; font-variant-numeric: tabular-nums; }
+  .quote__steps li.on { color: var(--ink); box-shadow: inset 0 2px 0 var(--violet); }
+  .quote__steps li.done { color: var(--ink-2); box-shadow: inset 0 2px 0 rgb(157 141 241 / 0.45); }
+
+  .qstep { border: 0; padding: 0; margin: 0; min-width: 0; display: none; }
+  .qstep.is-active { display: block; }
+  @media (prefers-reduced-motion: no-preference) { .qstep.is-active { animation: qin 320ms var(--ease-out); } }
+  @keyframes qin { from { opacity: 0; transform: translateY(8px); } }
+  :global(html.no-js) .qstep { display: block; margin-bottom: 2.5rem; }
+  .qstep legend { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.4rem, 2.8vw, 2rem); letter-spacing: -.035em; line-height: 1.1; margin-bottom: 1.5rem; padding: 0; }
+  .qhint { color: var(--ink-2); margin: -.6rem 0 1.4rem; }
+
+  .choices--big { display: grid; gap: .75rem; }
+  @media (min-width: 700px) { .choices--big { grid-template-columns: 1fr 1fr; } }
+  .choice { position: relative; cursor: pointer; }
+  .choice input, .pill input { position: absolute; opacity: 0; pointer-events: none; }
+  .choice__box { display: grid; gap: .5rem; height: 100%; padding: 1.2rem 1.25rem; border-radius: var(--r-md); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--line); transition: background-color 200ms ease, box-shadow 200ms ease, transform 160ms var(--ease-out); }
+  .choice:active .choice__box { transform: scale(0.98); }
+  @media (hover: hover) and (pointer: fine) { .choice:hover .choice__box { background: var(--panel-3); } .pill:hover span { background: var(--panel-3); } }
+  .choice input:checked + .choice__box { background: var(--violet-wash); box-shadow: inset 0 0 0 1.5px var(--violet); }
+  .choice input:focus-visible + .choice__box { outline: 2px solid var(--violet-ink); outline-offset: 3px; }
+  .choice__top { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; flex-wrap: wrap; }
+  .choice__title { font-weight: 600; font-size: 1.12rem; }
+  .choice__price { font-weight: 600; color: var(--violet-ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .choice__text { color: var(--ink-2); font-size: .95rem; line-height: 1.5; }
+
+  .choices--pills { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.6rem; }
+  .pill { position: relative; cursor: pointer; }
+  .pill span { display: inline-flex; align-items: center; min-height: 2.9rem; padding: .5rem 1.1rem; border-radius: 999px; background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--line); font-size: .98rem; transition: background-color 200ms ease, color 200ms ease, transform 160ms var(--ease-out); }
+  .pill:active span { transform: scale(0.97); }
+  .pill input:checked + span { background: var(--violet); color: var(--on-violet); font-weight: 600; box-shadow: none; }
+  .pill input:focus-visible + span { outline: 2px solid var(--violet-ink); outline-offset: 3px; }
+
+  .fields { display: grid; gap: 1rem; }
+  @media (min-width: 700px) { .fields { grid-template-columns: 1fr 1fr; } .field--wide { grid-column: 1 / -1; } }
+  .field { display: grid; gap: .45rem; font-size: .95rem; color: var(--ink-2); font-weight: 500; }
+  .field em { font-style: normal; color: var(--muted); font-weight: 400; }
+  .field input, .field textarea { width: 100%; font: inherit; font-weight: 400; font-size: 1rem; color: var(--ink); background: var(--panel); border: 1px solid var(--panel-3); border-radius: var(--r-md); padding: .85rem 1rem; transition: border-color 160ms ease; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
+  .field input:focus, .field textarea:focus { border-color: var(--violet-ink); outline: 2px solid var(--violet-ink); outline-offset: 1px; }
+  .field textarea { resize: vertical; }
+  .field [aria-invalid='true'] { border-color: #b4233c; }
+  .consent { display: flex; gap: .75rem; align-items: flex-start; margin-top: 1.4rem; font-size: .95rem; color: var(--ink-2); cursor: pointer; }
+  .consent input { width: 1.2rem; height: 1.2rem; margin-top: .2rem; flex: none; }
+  .consent a { color: var(--ink); }
+  .hp { position: absolute; left: -9999px; }
+  .qerr { min-height: 1.4em; margin-top: 1rem; color: #b4233c; font-size: .95rem; }
+
+  .quote__nav { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; box-shadow: 0 -1px 0 var(--line); }
+  .quote__nav [data-next], .quote__nav [data-submit] { margin-left: auto; }
+  .btn--back { padding: .35rem 1.35rem .35rem .4rem; }
+
+  .qdone { padding: 1.5rem 0; }
+  .qdone__big { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.05em; font-size: clamp(3rem, 7vw, 5rem); color: var(--violet-ink); line-height: 1; margin-bottom: 1rem; }
+  .qdone .muted { margin-top: 1rem; }
+
+  .summary { border-radius: var(--r-lg); padding: 1.6rem; background: var(--violet); box-shadow: inset 0 0 0 1px var(--line-2); }
+  .summary { color: var(--on-violet); box-shadow: none !important; }
+  .summary__list, .summary__direct { box-shadow: 0 -1px 0 rgb(22 19 31 / 0.18) !important; }
+  .summary__title { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.035em; font-size: 1.3rem; }
+  .summary__price { display: grid; gap: .2rem; margin: 1rem 0 1.3rem; }
+  .summary__price small { color: rgb(22 19 31 / 0.8); font-size: .9rem; }
+  .summary__price strong { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.04em; font-size: 2.5rem; color: var(--on-violet); }
+  .summary__list { display: grid; gap: .9rem; margin: 0; padding-top: 1.2rem; box-shadow: 0 -1px 0 var(--line-2); }
+  .summary__list dt { font-size: .85rem; color: rgb(22 19 31 / 0.8); }
+  .summary__list dd { margin: .15rem 0 0; font-weight: 550; }
+  .summary__note { margin-top: 1.3rem; font-size: .88rem; color: rgb(22 19 31 / 0.82); }
+  .summary__note + .summary__note { margin-top: .6rem; }
+  .summary__direct { margin-top: 1.3rem; padding-top: 1.2rem; box-shadow: 0 -1px 0 var(--line-2); display: grid; gap: .3rem; }
+  .summary__direct p { color: rgb(22 19 31 / 0.7); font-size: .9rem; }
+  .summary__direct a { font-weight: 600; text-decoration: none; }
+  @media (hover: hover) and (pointer: fine) { .summary__direct a:hover { color: var(--violet-ink); } }
+</style>

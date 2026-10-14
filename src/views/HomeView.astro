@@ -1,0 +1,323 @@
+---
+import { tilt } from '../data/tilt';
+import { url, caseUrl, ui, t, type Lang } from '../i18n';
+import { projects } from '../data/projects';
+import { concepts } from '../data/concepts';
+import Icon from '../components/Icon.astro';
+import Cta from '../components/Cta.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Strip from '../components/Strip.astro';
+import Person from '../components/Person.astro';
+import Logo from '../components/Logo.astro';
+import { LOGO } from '../data/logo';
+import { faqs } from '../data/faqs';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const L = <T,>(v: { it: T; en: T }) => t(lang, v);
+
+const labPick = ['soda', 'gioielleria', 'impresa-edile', 'abbigliamento', 'amici-del-cuore']
+  .map((slug) => concepts.find((c) => c.slug === slug)!)
+  .filter(Boolean);
+
+const live = projects.filter((p) => p.status === 'live');
+const vb = LOGO.viewBox.join(' ');
+
+const services = [
+  {
+    id: 'siti-vetrina',
+    title: L({ it: 'Siti vetrina', en: 'Showcase websites' }),
+    lead: L({ it: 'Il sito della tua attività, disegnato da zero intorno a te e ai tuoi clienti.', en: 'Your business website, designed from scratch around you and your customers.' }),
+    points: L({
+      it: ['Design su misura, niente template', 'Perfetto sul telefono', 'Testi chiari e animazioni curate', 'Moduli, prenotazioni, WhatsApp'],
+      en: ['Bespoke design, no templates', 'Flawless on phones', 'Clear copy and crafted motion', 'Forms, bookings, WhatsApp'],
+    }),
+    video: '/media/work/saimon-scroll.mp4', poster: '/media/work/saimon-scroll.webp',
+    caption: L({ it: 'Gelateria Saimon, sito multipagina', en: 'Gelateria Saimon, multi-page website' }),
+  },
+  {
+    id: 'e-commerce',
+    title: 'E-commerce',
+    lead: L({ it: 'Il negozio online che vende anche quando hai chiuso la saracinesca.', en: 'An online shop that keeps selling after closing time.' }),
+    points: L({
+      it: ['Catalogo e schede prodotto', 'Carrello e pagamenti sicuri', 'Ordini e spedizioni', 'Un pannello semplice per gestire tutto'],
+      en: ['Catalogue and product pages', 'Cart and secure payments', 'Orders and shipping', 'A simple dashboard to run it all'],
+    }),
+    video: '/media/concept/abbigliamento.mp4', poster: '/media/concept/abbigliamento.webp',
+    caption: L({ it: 'Atelier, e-commerce (concept)', en: 'Atelier, e-commerce (concept)' }),
+  },
+  {
+    id: 'seo-ai-seo',
+    title: 'SEO & AI SEO',
+    lead: L({ it: 'Farti trovare su Google, e quando i clienti chiedono a ChatGPT o Gemini.', en: 'Get found on Google, and when customers ask ChatGPT or Gemini.' }),
+    points: L({
+      it: ['Sito veloce e ben strutturato', 'Scheda Google Business curata', 'Contenuti che le AI capiscono e citano', 'Controlli e miglioramenti nel tempo'],
+      en: ['A fast, well-structured site', 'A well-kept Google Business profile', 'Content AI assistants understand and cite', 'Checks and improvements over time'],
+    }),
+    caption: L({ it: 'Esempio: come ti trovano i clienti', en: 'Example: how customers find you' }),
+  },
+];
+---
+
+<!-- HERO: il logo di particelle (la z calcia il punto, che orbita e si posa), titolo, azione. -->
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <div class="hero__particles" data-particles>
+    <span class="hero__word" data-particles-text aria-hidden="true"><Logo label="" /></span>
+    <svg class="hero__ball hero__ball--back" viewBox={vb} aria-hidden="true"><circle data-ball="back" r={LOGO.dot.r} transform={`translate(${LOGO.dot.x} ${LOGO.dot.y})`} /></svg>
+    <canvas aria-hidden="true"></canvas>
+    <svg class="hero__ball hero__ball--front" viewBox={vb} aria-hidden="true"><circle data-ball="front" r={LOGO.dot.r} transform={`translate(${LOGO.dot.x} ${LOGO.dot.y})`} /></svg>
+  </div>
+  <div class="wrap hero__bottom">
+    <div class="hero__copy">
+      <h1 id="hero-title" set:html={tilt(L({ it: 'Siti su misura, curati in ogni de[t]taglio.', en: 'Made-to-measure websites, crafted down to the de[t]ail.' }))} />
+      <p class="hero__sub">{L({ it: 'Niente siti pre-confezionati: ogni progetto nasce dalla tua attività e dai tuoi clienti. Parli direttamente con chi lo costruisce.', en: 'No off-the-shelf templates: every project starts from your business and your customers. You talk directly to the people who build it.' })}</p>
+    </div>
+    <div class="hero__actions">
+      <Cta href={url(lang, 'contact')} label={t(lang, ui.common.quote)} />
+      <a class="textlink" href="#lavori">{L({ it: 'Guarda i lavori', en: 'See the work' })} <Icon name="arrow-down" /></a>
+    </div>
+  </div>
+</section>
+
+<!-- SERVIZI: tre schede che si impilano mentre scorri, ognuna con un esempio vero -->
+<section class="servizi" id="servizi" aria-labelledby="servizi-title" data-stack>
+  <div class="wrap">
+    <div class="servizi__head">
+      <h2 id="servizi-title" data-reveal>{L({ it: 'Cosa facciamo.', en: 'What we do.' })}</h2>
+      <p class="lead" data-reveal>{L({ it: 'Tre servizi, ognuno cucito sulla tua attività. Niente pacchetti uguali per tutti.', en: 'Three services, each tailored to your business. No one-size-fits-all packages.' })}</p>
+    </div>
+    <div class="stack">
+      {services.map((sv, i) => (
+        <article class="scard" style={`--i:${i}`} data-scard aria-labelledby={`sv-${i}`}>
+          <div class="scard__inner">
+            <div class="scard__text">
+              <h3 id={`sv-${i}`}>{sv.title}</h3>
+              <p class="scard__lead">{sv.lead}</p>
+              <ul class="scard__list">{sv.points.map((p) => <li><Icon name="check" />{p}</li>)}</ul>
+              <a class="textlink" href={`${url(lang, 'services')}#${sv.id}`}>{L({ it: 'Scopri il servizio', en: 'About this service' })} <Icon name="arrow-right" /></a>
+            </div>
+            <figure class="scard__media">
+              {sv.video ? (
+                <div class="scard__screen">
+                  <img src={sv.poster} alt="" width="1280" height="800" loading="lazy" />
+                  <video muted loop playsinline preload="none" data-autoplay data-src={sv.video} poster={sv.poster} aria-hidden="true"></video>
+                </div>
+              ) : (
+                <div class="scard__screen seo" aria-hidden="true">
+                  <div class="seo__query"><Icon name="magnifying-glass" /><span>{L({ it: 'gelateria vicino a me', en: 'gelato shop near me' })}</span></div>
+                  <ol class="seo__list">
+                    <li class="seo__row seo__row--you"><b>{L({ it: 'La tua attività', en: 'Your business' })}</b><span>{L({ it: 'iltuosito.it · Aperto ora', en: 'yoursite.com · Open now' })}</span></li>
+                    <li class="seo__row"><b>Gelateria Centrale</b><span>gelateriacentrale.it</span></li>
+                    <li class="seo__row"><b>Il Cono Dolce</b><span>ilconodolce.it</span></li>
+                  </ol>
+                  <div class="seo__ai"><Icon name="sparkle" /><p>{L({ it: '«Per una gelateria artigianale in zona, i clienti consigliano La tua attività: ingredienti freschi e aperto fino a tardi.»', en: '“For artisan gelato nearby, customers recommend Your business: fresh ingredients and open late.”' })}</p></div>
+                </div>
+              )}
+              <figcaption>{sv.caption}</figcaption>
+            </figure>
+          </div>
+          <span class="scard__shade" aria-hidden="true"></span>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- LAVORI: un prisma 3D che gira mentre scorri, una faccia per cliente, l'ultima è la tua -->
+<section class="lavori" id="lavori" aria-labelledby="lavori-title" data-prism>
+  <div class="lavori__pin" data-prism-pin>
+    <div class="wrap lavori__grid">
+      <div class="lavori__text">
+        <h2 id="lavori-title">{L({ it: 'Siti veri, per clienti veri.', en: 'Real sites, for real clients.' })}</h2>
+        <ol class="lavori__list">
+          {live.map((p) => (
+            <li class="lavori__item" data-prism-item>
+              <h3><a href={caseUrl(lang, p.slug)}>{p.client}</a></h3>
+              <p class="lavori__meta">{p.sector[lang]}{p.location && ` · ${p.location}`}</p>
+              <div class="lavori__thumb" data-thumb aria-hidden="true"><img src={p.media.poster} alt="" width="1280" height="800" loading="lazy" /></div>
+              <p class="lavori__blurb">{p.blurb[lang]}</p>
+              <a class="textlink" href={caseUrl(lang, p.slug)}>{t(lang, ui.common.viewCase)} <Icon name="arrow-right" /></a>
+            </li>
+          ))}
+          <li class="lavori__item lavori__item--you" data-prism-item>
+            <h3>{L({ it: 'Il prossimo sito.', en: 'The next site.' })}</h3>
+            <p class="lavori__meta">{L({ it: 'Potrebbe essere il tuo', en: 'It could be yours' })}</p>
+            <p class="lavori__blurb">{L({ it: 'Raccontaci la tua attività in un minuto: ti rispondiamo con un’idea su misura.', en: 'Tell us about your business in a minute: we reply with a tailored idea.' })}</p>
+            <Cta href={url(lang, 'contact')} label={t(lang, ui.common.quote)} />
+          </li>
+        </ol>
+      </div>
+      <div class="stage" aria-hidden="true">
+        <div class="prism" data-prism-body>
+          {live.map((p, i) => (
+            <div class="face" style={`--i:${i}`} data-face>
+              <img src={p.media.poster} alt="" width="1280" height="800" loading="lazy" />
+              {p.media.video && <video muted loop playsinline preload="none" data-src={p.media.video} poster={p.media.poster}></video>}
+            </div>
+          ))}
+          <div class="face face--you" style={`--i:${live.length}`} data-face>
+            <span class="face__you">{L({ it: 'Qui c’è posto per il tuo sito.', en: 'There’s room here for your site.' })}</span>
+          </div>
+        </div>
+        <div class="stage__floor"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<Person lang={lang} />
+
+<!-- LABORATORIO: schede che si allargano al passaggio -->
+<section class="lab" aria-labelledby="lab-title">
+  <div class="wrap">
+    <div class="lab__head">
+      <div>
+        <h2 id="lab-title" data-reveal>{L({ it: 'Il laboratorio.', en: 'The lab.' })}</h2>
+        <p class="lead" data-reveal>{L({ it: 'Concept nati per provare idee nuove: 3D, video, scroll. Non sono clienti, sono il nostro campo prove.', en: 'Concepts made to try new ideas: 3D, video, scroll. They are not clients, they are our testing ground.' })}</p>
+      </div>
+      <a class="textlink" href={url(lang, 'concept')} data-reveal>{L({ it: 'Tutti i concept', en: 'All concepts' })} <Icon name="arrow-right" /></a>
+    </div>
+    <Strip lang={lang} items={labPick} lead />
+  </div>
+</section>
+
+<!-- DOMANDE: le quattro che fa chi compra un sito per la prima volta -->
+<section class="faq" aria-labelledby="faq-title">
+  <div class="wrap faq__inner">
+    <div>
+      <h2 id="faq-title" data-reveal>{L({ it: 'Le domande che ci fanno tutti.', en: 'The questions everyone asks.' })}</h2>
+      <a class="textlink" href={`${url(lang, 'services')}#faq-title`} data-reveal>{L({ it: 'Tutte le domande', en: 'All questions' })} <Icon name="arrow-right" /></a>
+    </div>
+    <dl class="faq__list">
+      {faqs.filter((f) => f.home).map((f) => (
+        <div data-reveal><dt>{f.q[lang]}</dt><dd>{f.a[lang]}</dd></div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<CtaBand lang={lang} />
+
+<style>
+  /* ---------- HERO ---------- */
+  .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: 1fr auto; padding-top: 5.5rem; overflow: hidden; }
+  .hero::before {
+    content: ''; position: absolute; inset: -20% -10% auto -10%; height: 90%; pointer-events: none;
+    background: radial-gradient(45% 50% at 50% 45%, rgb(157 141 241 / 0.10), transparent 70%);
+  }
+  .hero__particles { position: relative; display: grid; place-items: center; min-height: 0; }
+  /* il logo fermo (senza WebGL) e i due strati del punto stanno nella stessa cella, alla stessa misura */
+  .hero__word, .hero__ball { grid-area: 1 / 1; width: min(calc(clamp(5.4rem, min(24vw, 36vh), 21rem) * 3.86), 92vw); }
+  .hero__word { display: block; color: var(--violet-ink); opacity: .9; transition: opacity 300ms ease; user-select: none; }
+  .hero__word :global(.logo) { width: 100%; height: auto; }
+  .hero__ball { position: relative; height: auto; aspect-ratio: 3900 / 1010; overflow: visible; opacity: 0; pointer-events: none; }
+  .hero__ball circle { fill: var(--violet); }
+  .hero__ball--back { z-index: 1; }
+  .hero__particles canvas { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; opacity: 0; transition: opacity 250ms ease; }
+  .hero__ball--front { z-index: 3; }
+  .hero__particles:global(.is-lit) .hero__word { opacity: 0; }
+  .hero__particles:global(.is-lit) canvas, .hero__particles:global(.is-lit) .hero__ball { opacity: 1; }
+
+  .hero__bottom { position: relative; display: grid; gap: 2rem; align-items: end; padding-bottom: clamp(1.75rem, 5vh, 3.25rem); }
+  .hero__copy { max-width: 48rem; }
+  .hero h1 { font-size: clamp(1.9rem, 4vw, 3.8rem); font-weight: 600; letter-spacing: -0.035em; line-height: 1.06; }
+  .hero__sub { margin-top: 1rem; font-size: var(--fs-lead); color: var(--ink-2); max-width: 46ch; line-height: 1.5; }
+  .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; }
+  @media (min-width: 960px) {
+    .hero__bottom { grid-template-columns: 1fr auto; }
+    .hero__actions { justify-content: flex-end; }
+  }
+
+  /* ---------- SERVIZI / SCHEDE IMPILATE ---------- */
+  .servizi { padding-block: clamp(4.5rem, 9vw, 7.5rem) clamp(3rem, 6vw, 5rem); }
+  .servizi__head { display: grid; gap: 1.2rem; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+  .servizi h2 { font-size: var(--fs-h2); }
+  .stack { display: grid; gap: 1.25rem; }
+  .scard { position: relative; border-radius: var(--r-lg); background: var(--panel); box-shadow: inset 0 0 0 1px var(--line), inset 0 1px 0 rgb(255 255 255 / 0.05), var(--shadow); overflow: hidden; transform-origin: 50% 0; }
+  .scard__inner { display: grid; gap: 2rem; padding: clamp(1.4rem, 3vw, 2.75rem); }
+  .scard h3 { font-size: clamp(1.8rem, 3vw, 2.9rem); letter-spacing: -0.04em; line-height: 1; }
+  .scard__lead { margin-top: 1rem; font-size: var(--fs-lead); color: var(--ink-2); max-width: 36ch; line-height: 1.5; }
+  .scard__list { display: grid; gap: .7rem; margin: 1.6rem 0 1.8rem; }
+  .scard__list li { display: flex; gap: .65rem; align-items: flex-start; }
+  .scard__list :global(svg) { flex: none; width: 1.15rem; height: 1.15rem; margin-top: .25rem; color: var(--violet-ink); }
+  .scard__media { margin: 0; display: grid; gap: .7rem; align-content: center; }
+  .scard__media figcaption { font-size: .9rem; color: var(--muted); }
+  .scard__screen { position: relative; aspect-ratio: 16 / 10.6; border-radius: var(--r-md); overflow: hidden; background: var(--media); box-shadow: inset 0 0 0 1px var(--line-2); }
+  .scard__screen img, .scard__screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .scard__screen video { opacity: 0; transition: opacity 400ms ease; }
+  .scard__screen video:global(.is-playing) { opacity: 1; }
+  .scard__shade { position: absolute; inset: 0; background: var(--bg); opacity: 0; pointer-events: none; }
+  @media (max-width: 899.98px) { .scard__screen.seo { aspect-ratio: auto; overflow: visible; } }
+
+  .seo { display: grid; align-content: center; gap: .85rem; padding: clamp(1rem, 2.5vw, 1.75rem); background: var(--panel-2); }
+  .seo__query { display: flex; align-items: center; gap: .6rem; height: 2.7rem; padding: 0 1.1rem; border-radius: 999px; background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink-2); font-size: .95rem; }
+  .seo__query :global(svg) { width: 1rem; height: 1rem; color: var(--muted); }
+  .seo__list { display: grid; gap: .45rem; }
+  .seo__row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .7rem 1rem; border-radius: 12px; font-size: .92rem; }
+  .seo__row b { font-weight: 550; white-space: nowrap; }
+  .seo__row span { color: var(--muted); font-size: .82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .seo__row--you { background: var(--violet-wash); box-shadow: inset 0 0 0 1px rgb(157 141 241 / 0.35); }
+  .seo__row--you b { color: var(--violet-ink); }
+  .seo__ai { display: flex; gap: .6rem; align-items: flex-start; padding: .85rem 1rem; border-radius: 12px; background: var(--violet-wash); color: var(--ink-2); font-size: .92rem; line-height: 1.5; }
+  .seo__ai :global(svg) { flex: none; width: 1rem; height: 1rem; margin-top: .25rem; color: var(--violet-ink); }
+
+  @media (min-width: 900px) {
+    .servizi__head { grid-template-columns: max-content minmax(0, 34rem); justify-content: space-between; align-items: end; gap: 3rem; }
+    .scard { position: sticky; top: calc(6rem + var(--i) * 1.1rem); }
+    /* la scheda che arriva copre la precedente con un'ombra netta: si legge come strato anche senza animazione */
+    .scard + .scard { box-shadow: inset 0 0 0 1px var(--line), 0 -18px 40px -14px rgb(58 40 130 / 0.22), var(--shadow); }
+    .scard__inner { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(2rem, 4vw, 4rem); align-items: center; min-height: min(36rem, calc(100vh - 9rem)); }
+    .stack { gap: 2rem; padding-bottom: 2rem; }
+  }
+
+  /* ---------- LAVORI / PRISMA ---------- */
+  .lavori__pin { padding-block: clamp(4.5rem, 9vw, 7rem); }
+  .lavori__grid { display: grid; gap: 3rem; align-items: center; }
+  .lavori h2 { font-size: var(--fs-h2); max-width: 13ch; margin-bottom: 2.5rem; }
+  .lavori__list { display: grid; gap: 3rem; }
+  .lavori__item h3 { font-size: clamp(1.5rem, 2.4vw, 2.2rem); letter-spacing: -0.035em; }
+  .lavori__item h3 a { text-decoration: none; }
+  .lavori__meta { margin-top: .35rem; color: var(--muted); font-size: .95rem; }
+  .lavori__blurb { margin-top: .8rem; color: var(--ink-2); max-width: 44ch; }
+  .lavori__item .textlink { margin-top: 1rem; padding-block: .5rem; }
+  .lavori__item :global(.btn) { margin-top: 1.4rem; }
+  .lavori__thumb { position: relative; margin: 1.2rem 0 .2rem; aspect-ratio: 16 / 10.6; border-radius: var(--r-md); overflow: hidden; background: var(--media); box-shadow: inset 0 0 0 1px var(--line-2), var(--shadow); }
+  .lavori__thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+  .stage { display: none; position: relative; perspective: 2000px; perspective-origin: 50% 45%; }
+  .prism { position: relative; transform-style: preserve-3d; will-change: transform; }
+  .face { overflow: hidden; border-radius: var(--r-lg); background: var(--media); box-shadow: inset 0 0 0 1px var(--line-2); }
+  .face img, .face video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .face video { opacity: 0; transition: opacity 400ms ease; }
+  .face video:global(.is-playing) { opacity: 1; }
+  .face--you { display: grid; place-items: center; padding: 3rem; background: var(--violet); }
+  .face__you { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.04em; line-height: 1.05; font-size: clamp(1.6rem, 3vw, 2.6rem); text-align: center; max-width: 14ch; text-wrap: balance; color: var(--on-violet); }
+  .stage__floor { position: absolute; left: 14%; right: 14%; bottom: -14%; height: 12%; background: radial-gradient(50% 50% at 50% 50%, rgb(58 40 130 / 0.25), transparent 70%); pointer-events: none; }
+
+  /* prisma attivo (lo accende lo script solo su desktop, con movimento) */
+  :global(html.prism-on) .lavori__pin { height: 100vh; display: grid; align-items: center; padding-block: 5.5rem 2rem; }
+  :global(html.prism-on) .lavori__grid { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(2rem, 5vw, 5rem); }
+  :global(html.prism-on) .lavori__list { position: relative; display: block; min-height: 16rem; }
+  :global(html.prism-on) .lavori__item { position: absolute; inset: 0 0 auto 0; opacity: 0; transform: translateY(14px); transition: opacity 380ms var(--ease-out), transform 480ms var(--ease-out); pointer-events: none; }
+  :global(html.prism-on) .lavori__item:global(.is-active) { opacity: 1; transform: none; pointer-events: auto; }
+  :global(html.prism-on) .lavori__thumb { display: none; }
+  :global(html.prism-on) .stage { display: block; }
+  :global(html.prism-on) .prism { width: min(100%, 44rem); aspect-ratio: 16 / 10.6; margin-inline: auto; }
+  :global(html.prism-on) .face { position: absolute; inset: 0; backface-visibility: hidden; transform: rotateY(calc(var(--i) * var(--step, 120deg))) translateZ(var(--apothem, 12rem)); }
+
+  /* ---------- DOMANDE ---------- */
+  .faq { padding-block: clamp(4rem, 8vw, 7rem); }
+  .faq__inner { display: grid; gap: 2.5rem; }
+  .faq h2 { font-size: var(--fs-h2); max-width: 13ch; margin-bottom: 1rem; }
+  .faq__list { display: grid; gap: 2rem 3.5rem; margin: 0; }
+  .faq__list dt { font-weight: 600; font-size: clamp(1.15rem, 0.6vw + 0.9rem, 1.4rem); letter-spacing: -0.01em; }
+  .faq__list dd { margin: .5rem 0 0; color: var(--ink-2); max-width: 52ch; }
+  @media (min-width: 760px) { .faq__list { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1080px) { .faq__inner { grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); gap: 4rem; } }
+
+  /* ---------- LAB ---------- */
+  .lab { padding-block: clamp(4.5rem, 9vw, 7rem); }
+  .lab__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1.5rem 3rem; margin-bottom: clamp(2rem, 4vw, 3rem); }
+  .lab h2 { font-size: var(--fs-h2); }
+  .lab .lead { margin-top: 1rem; }
+</style>

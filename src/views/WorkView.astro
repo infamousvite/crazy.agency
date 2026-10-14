@@ -1,0 +1,94 @@
+---
+import { url, caseUrl, ui, t, type Lang } from '../i18n';
+import { projects } from '../data/projects';
+import { concepts } from '../data/concepts';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Strip from '../components/Strip.astro';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const L = <T,>(v: { it: T; en: T }) => t(lang, v);
+---
+<section class="page-hero">
+  <div class="wrap">
+    <h1>{L({ it: 'Lavori fatti su misura.', en: 'Work made to measure.' })}</h1>
+    <p class="lead">{L({ it: 'Ogni progetto parte da un’attività vera, con i suoi clienti e il suo modo di lavorare. Nessuno di questi siti nasce da un template.', en: 'Every project starts from a real business, with its own customers and way of working. None of these sites started from a template.' })}</p>
+  </div>
+</section>
+
+<section class="wrap cases" aria-label={L({ it: 'Clienti', en: 'Clients' })}>
+  {projects.map((p, i) => (
+    <article class:list={['case', i % 2 && 'case--flip']}>
+      <div class="case__media">
+        <div class="win">
+          <div class="win__view">
+            {p.media.poster ? (
+              <>
+                <img src={p.media.poster} alt="" width="1280" height="800" loading="lazy" />
+                {p.media.video && <video muted loop playsinline preload="none" data-autoplay data-src={p.media.video} poster={p.media.poster}></video>}
+              </>
+            ) : <div class="win__soon"><span>{L({ it: 'Sta sbocciando', en: 'In bloom' })}</span></div>}
+          </div>
+        </div>
+      </div>
+      <div class="case__text">
+        <h2>{p.status === 'live' ? <a href={caseUrl(lang, p.slug)}>{p.client}</a> : p.client}</h2>
+        <p class="case__meta">{p.sector[lang]}{p.location && ` · ${p.location}`} · {p.year}</p>
+        <p class="case__blurb">{p.blurb[lang]}</p>
+        {p.status === 'live'
+          ? <a class="textlink" href={caseUrl(lang, p.slug)}>{t(lang, ui.common.viewCase)} <Icon name="arrow-right" /></a>
+          : <span class="tag tag--soon">{t(lang, ui.common.comingSoon)}</span>}
+      </div>
+    </article>
+  ))}
+</section>
+
+<section class="wrap labteaser" aria-labelledby="lab-title">
+  <div class="labteaser__head">
+    <div>
+      <h2 id="lab-title">{L({ it: 'Il laboratorio.', en: 'The lab.' })}</h2>
+      <p class="lead">{L({ it: `${concepts.length} concept nati per provare idee nuove. Non sono clienti: sono il nostro campo prove.`, en: `${concepts.length} concepts made to try new ideas. They are not clients: they are our testing ground.` })}</p>
+    </div>
+    <a class="textlink" href={url(lang, 'concept')}>{L({ it: 'Entra nel laboratorio', en: 'Enter the lab' })} <Icon name="arrow-right" /></a>
+  </div>
+  <Strip lang={lang} items={concepts.slice(0, 5)} lead />
+</section>
+
+<CtaBand lang={lang} title={L({ it: 'Manca il tuo progetto.', en: 'Your project is missing.' })} />
+
+<style>
+  .cases { display: grid; gap: clamp(4.5rem, 9vw, 8rem); padding-bottom: clamp(5rem, 10vw, 8rem); }
+  .case { display: grid; gap: 1.75rem; align-items: center; }
+  .case__media { perspective: 1400px; }
+  .win { border-radius: var(--r-lg); overflow: hidden; background: var(--panel); box-shadow: inset 0 0 0 1px var(--line-2), var(--shadow); transform-origin: 50% 100%; }
+  .win__view { position: relative; aspect-ratio: 16 / 10; background: var(--media); }
+  .win__view img, .win__view video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .win__view video { opacity: 0; transition: opacity 400ms ease; }
+  .win__view video:global(.is-playing) { opacity: 1; }
+  .win__soon { position: absolute; inset: 0; display: grid; place-items: center; background: var(--violet); color: var(--on-violet); }
+  .win__soon span { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.4rem, 3vw, 2.4rem); letter-spacing: -0.03em; }
+  .case h2 { font-size: clamp(1.7rem, 3vw, 2.6rem); letter-spacing: -0.04em; }
+  .case h2 a { text-decoration: none; }
+  .case__meta { margin-top: .5rem; color: var(--muted); }
+  .case__blurb { margin-top: 1rem; color: var(--ink-2); max-width: 46ch; font-size: var(--fs-lead); line-height: 1.5; }
+  .case .textlink, .case .tag { margin-top: 1.4rem; }
+  @media (min-width: 900px) {
+    .case { grid-template-columns: 1.35fr 1fr; gap: clamp(2.5rem, 5vw, 5rem); }
+    .case--flip .case__media { order: 2; }
+  }
+  /* la finestra si raddrizza mentre entra (solo browser che supportano le timeline di scroll) */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .win { animation: winIn linear both; animation-timeline: view(); animation-range: entry 0% cover 45%; }
+      .case--flip .win { animation-name: winInFlip; }
+    }
+  }
+  @keyframes winIn { from { transform: rotateX(24deg) rotateY(-10deg) scale(.9); opacity: .4; } to { transform: none; opacity: 1; } }
+  @keyframes winInFlip { from { transform: rotateX(24deg) rotateY(10deg) scale(.9); opacity: .4; } to { transform: none; opacity: 1; } }
+
+  .labteaser { padding-bottom: clamp(4rem, 8vw, 6rem); }
+  .labteaser__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1.5rem 3rem; margin-bottom: 2.5rem; }
+  .labteaser h2 { font-size: var(--fs-h2); }
+  .labteaser .lead { margin-top: 1rem; }
+</style>

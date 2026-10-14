@@ -1,0 +1,30 @@
+---
+import { url, ui, t, type Lang } from '../i18n';
+import { concepts } from '../data/concepts';
+import CtaBand from '../components/CtaBand.astro';
+import Strip from '../components/Strip.astro';
+import Icon from '../components/Icon.astro';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const L = <T,>(v: { it: T; en: T }) => t(lang, v);
+const rows: (typeof concepts)[] = [];
+for (let i = 0; i < concepts.length; i += 4) rows.push(concepts.slice(i, i + 4));
+---
+<section class="page-hero">
+  <div class="wrap">
+    <a class="back" href={url(lang, 'work')}><Icon name="arrow-left" /> {t(lang, ui.common.allWork)}</a>
+    <h1>{L({ it: 'Il laboratorio.', en: 'The lab.' })}</h1>
+    <p class="lead">{L({ it: 'Progetti dimostrativi, non commissionati da clienti: li abbiamo fatti per provare stili, 3D e interazioni. Passa sopra una scheda per vederla in movimento. Se uno ti piace, possiamo farne uno così per te.', en: 'Demo projects, not commissioned by clients: we made them to try out styles, 3D and interaction. Hover a card to see it move. If you like one, we can build something like it for you.' })}</p>
+  </div>
+</section>
+
+<section class="wrap rows" aria-label="Concept">
+  {rows.map((r) => <Strip lang={lang} items={r} notes />)}
+</section>
+
+<CtaBand lang={lang} title={L({ it: 'Ne vuoi uno così?', en: 'Want one like these?' })} />
+
+<style>
+  .rows { display: grid; gap: .75rem; padding-bottom: clamp(4rem, 8vw, 6rem); }
+</style>

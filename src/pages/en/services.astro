@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import ServicesView from '../../views/ServicesView.astro';
+import { alt, url } from '../../i18n';
+import { faqSchema } from '../../data/seo';
+const site = Astro.site?.toString().replace(/\/$/, '') ?? '';
+---
+<Base
+  lang="en"
+  title="Websites, e-commerce, SEO and AI SEO in Thiene, Italy"
+  description={`Landing pages, multi-page websites, e-commerce and SEO & AI SEO to get found on Google and ChatGPT. Made-to-measure websites from a web agency in Thiene, Italy.`}
+  alternates={alt('services')}
+  crumbs={[{ name: 'Services', path: url('en', 'services') }]}
+  jsonld={[faqSchema('en', site + url('en', 'services'))]}
+>
+  <ServicesView lang="en" />
+</Base>

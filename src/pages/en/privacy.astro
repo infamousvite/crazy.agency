@@ -1,0 +1,8 @@
+---
+import Base from '../../layouts/Base.astro';
+import LegalView from '../../views/LegalView.astro';
+import { alt } from '../../i18n';
+---
+<Base lang="en" title="Privacy policy" description="Crazy. privacy policy." alternates={alt('privacy')} noindex>
+  <LegalView lang="en" kind="privacy" />
+</Base>

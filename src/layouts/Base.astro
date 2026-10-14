@@ -1,0 +1,107 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+import type { Lang, Alternates } from '../i18n';
+import { ui, t } from '../i18n';
+import { orgSchema, peopleSchema, websiteSchema, breadcrumbSchema, ids, type Crumb } from '../data/seo';
+// font principali (latino, peso variabile): precaricati per evitare il salto del testo
+import fontDisplay from '@fontsource-variable/unbounded/files/unbounded-latin-wght-normal.woff2?url';
+import fontText from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  alternates: Alternates;
+  image?: string;
+  imageAlt?: string;
+  /** tipo di pagina schema.org: WebPage, AboutPage, ContactPage, CollectionPage, FAQPage… */
+  pageType?: string;
+  /** briciole di pane dopo la Home (dati strutturati BreadcrumbList) */
+  crumbs?: Crumb[];
+  jsonld?: Record<string, unknown>[];
+  noindex?: boolean;
+}
+const { lang, title, description, alternates, image = '/og.png', imageAlt, pageType = 'WebPage', crumbs = [], jsonld = [], noindex = false } = Astro.props;
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const canonical = siteUrl + alternates[lang];
+const fullTitle = title.includes('Crazy.') ? title : `${title} | Crazy.`;
+const isDefaultImage = image === '/og.png';
+const ogAlt = imageAlt ?? t(lang, { it: 'Crazy., web agency a Thiene (Vicenza)', en: 'Crazy., web agency in Thiene, Italy' });
+const id = ids(siteUrl);
+
+const webPage = {
+  '@type': pageType,
+  '@id': `${canonical}#webpage`,
+  url: canonical,
+  name: fullTitle,
+  description,
+  inLanguage: lang,
+  isPartOf: { '@id': id.website },
+  about: { '@id': id.org },
+  primaryImageOfPage: { '@type': 'ImageObject', url: siteUrl + image },
+  dateModified: site.updated,
+  ...(crumbs.length ? { breadcrumb: { '@id': `${canonical}#breadcrumb` } } : {}),
+};
+// un solo blocco JSON-LD collegato con @id: organizzazione, persone, sito, pagina, briciole e dati della pagina
+const graph = noindex ? [] : [
+  orgSchema(lang, siteUrl),
+  ...peopleSchema(siteUrl),
+  websiteSchema(lang, siteUrl),
+  webPage,
+  ...(crumbs.length ? [breadcrumbSchema(lang, siteUrl, canonical, crumbs)] : []),
+  ...jsonld.map(({ '@context': _c, ...rest }) => rest),
+];
+---
+<!doctype html>
+<html lang={lang} class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="it" href={siteUrl + alternates.it} />
+    <link rel="alternate" hreflang="en" href={siteUrl + alternates.en} />
+    <link rel="alternate" hreflang="x-default" href={siteUrl + alternates.it} />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
+    <link rel="preload" href={fontDisplay} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={fontText} as="font" type="font/woff2" crossorigin />
+    <meta name="theme-color" content="#f4f2fa" />
+    <meta name="author" content={`${site.name} (${site.team.names.join(t(lang, { it: ' e ', en: ' and ' }))})`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Crazy." />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={siteUrl + image} />
+    {isDefaultImage && <meta property="og:image:width" content="1200" />}
+    {isDefaultImage && <meta property="og:image:height" content="630" />}
+    <meta property="og:image:alt" content={ogAlt} />
+    <meta property="og:locale" content={lang === 'it' ? 'it_IT' : 'en_GB'} />
+    <meta property="og:locale:alternate" content={lang === 'it' ? 'en_GB' : 'it_IT'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={siteUrl + image} />
+    <meta name="twitter:image:alt" content={ogAlt} />
+    {graph.length > 0 && <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })} />}
+    <script is:inline>document.documentElement.classList.replace('no-js', 'js');</script>
+  </head>
+  <body>
+    <a class="skip" href="#main">{t(lang, ui.nav.skip)}</a>
+    <Nav lang={lang} alternates={alternates} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+    <script>
+      import { boot } from '../scripts/app';
+      boot();
+    </script>
+  </body>
+</html>

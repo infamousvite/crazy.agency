@@ -1,0 +1,122 @@
+---
+import { url, caseUrl, ui, t, type Lang } from '../i18n';
+import { liveProjects, type Project } from '../data/projects';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+
+interface Props { lang: Lang; project: Project }
+const { lang, project: p } = Astro.props;
+const L = <T,>(v: { it: T; en: T }) => t(lang, v);
+const i = liveProjects.findIndex((x) => x.slug === p.slug);
+const next = liveProjects[(i + 1) % liveProjects.length];
+const desktop = p.media.gallery.filter((g) => !g.mobile);
+const mobile = p.media.gallery.filter((g) => g.mobile);
+// alt descrittivo: nome del cliente + cosa si vede
+const alt = (g: Project['media']['gallery'][number]) => `${p.client}: ${t(lang, g.alt).charAt(0).toLowerCase()}${t(lang, g.alt).slice(1)}`;
+---
+<article class="case">
+  <header class="page-hero case__hero">
+    <div class="wrap">
+      <a class="back" href={url(lang, 'work')}><Icon name="arrow-left" /> {t(lang, ui.common.allWork)}</a>
+      <h1>{t(lang, p.title)}</h1>
+      <dl class="case__meta">
+        <div><dt>{t(lang, ui.common.client)}</dt><dd>{p.client}</dd></div>
+        <div><dt>{t(lang, ui.common.sector)}</dt><dd>{t(lang, p.sector)}{p.location && `, ${p.location}`}</dd></div>
+        <div><dt>{t(lang, ui.common.year)}</dt><dd>{p.year}</dd></div>
+        <div><dt>{t(lang, ui.common.services)}</dt><dd>{p.services.map((s) => t(lang, s)).join(', ')}</dd></div>
+        {p.url && (
+          <div><dt>Web</dt><dd>
+            {p.urlPlaceholder
+              ? <span>{p.url === '#' ? L({ it: 'Online a breve', en: 'Launching soon' }) : `${p.url.replace('https://', '')} (${L({ it: 'presto online', en: 'launching soon' })})`}</span>
+              : <a href={p.url} target="_blank" rel="noopener">{p.url.replace('https://', '')}</a>}
+          </dd></div>
+        )}
+      </dl>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <figure class="stage">
+      <div class="stage__window">
+        {p.media.video
+          ? <video muted loop playsinline preload="metadata" data-autoplay poster={p.media.poster} data-src={p.media.video} aria-label={L({ it: `Il sito di ${p.client} mentre si scorre`, en: `${p.client} website, scrolling` })}></video>
+          : <img src={p.media.poster} alt={L({ it: `Il sito di ${p.client}`, en: `${p.client} website` })} width="1440" height="900" />}
+      </div>
+    </figure>
+  </div>
+
+  <section class="wrap story">
+    <div class="story__block" data-reveal>
+      <h2>{L({ it: 'La richiesta', en: 'The brief' })}</h2>
+      <p class="story__big">{t(lang, p.challenge)}</p>
+    </div>
+    <div class="story__block" data-reveal style="--d:100ms">
+      <h2>{L({ it: 'Cosa abbiamo fatto', en: 'What we built' })}</h2>
+      <p class="story__text">{t(lang, p.solution)}</p>
+      <ul class="story__hl">{p.highlights.map((h) => <li><Icon name="check" />{t(lang, h)}</li>)}</ul>
+    </div>
+  </section>
+
+  <section class="wrap gallery" aria-label={L({ it: 'Immagini del sito', en: 'Website images' })}>
+    {desktop[0] && <img class="g g--wide" src={desktop[0].src} alt={alt(desktop[0])} width={desktop[0].w} height={desktop[0].h} loading="lazy" decoding="async" data-reveal />}
+    <div class="g-row">
+      {mobile.map((m) => <img class="g g--phone" src={m.src} alt={alt(m)} width={m.w} height={m.h} loading="lazy" decoding="async" data-reveal />)}
+      {desktop[1] && <img class="g g--half" src={desktop[1].src} alt={alt(desktop[1])} width={desktop[1].w} height={desktop[1].h} loading="lazy" decoding="async" data-reveal />}
+    </div>
+    {desktop.slice(2).map((d) => <img class="g g--wide" src={d.src} alt={alt(d)} width={d.w} height={d.h} loading="lazy" decoding="async" data-reveal />)}
+  </section>
+
+  {p.results.length > 0 && (
+    <section class="wrap results">
+      <h2>{L({ it: 'Risultati', en: 'Results' })}</h2>
+      <div class="results__nums">{p.results.map((r) => <div><strong>{r.value}</strong><span>{t(lang, r.label)}</span></div>)}</div>
+    </section>
+  )}
+
+  {next && next.slug !== p.slug && (
+    <a class="nextcase" href={caseUrl(lang, next.slug)}>
+      <div class="wrap nextcase__inner">
+        <span class="muted">{L({ it: 'Progetto successivo', en: 'Next project' })}</span>
+        <span class="nextcase__name">{next.client.replace(' Alto Vicentino ODV', '')} <Icon name="arrow-right" /></span>
+      </div>
+    </a>
+  )}
+</article>
+
+<CtaBand lang={lang} title={L({ it: 'Il prossimo può essere il tuo.', en: 'The next one could be yours.' })} />
+
+<style>
+  .case__hero h1 { max-width: 18ch; }
+  .case__meta { display: grid; gap: 1.2rem 2rem; margin: 2.5rem 0 0; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+  .case__meta dt { font-size: .85rem; color: var(--muted); }
+  .case__meta dd { margin: .25rem 0 0; font-weight: 600; }
+
+  .stage { margin: 0 0 clamp(4.5rem, 9vw, 7rem); border-radius: var(--r-lg); overflow: hidden; background: var(--panel); box-shadow: inset 0 0 0 1px var(--line-2), var(--shadow), 0 60px 120px -60px rgb(157 141 241 / 0.22); }
+  .stage__window { background: var(--media); }
+  .stage__window video, .stage__window img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+
+  .story { display: grid; gap: 3.5rem; padding-bottom: clamp(4.5rem, 9vw, 7rem); }
+  .story h2 { font-size: var(--fs-h3); letter-spacing: -0.03em; margin-bottom: 1rem; }
+  .story__big { font-size: clamp(1.25rem, 1.9vw, 1.65rem); line-height: 1.45; max-width: 36ch; }
+  .story__text { color: var(--ink-2); max-width: 58ch; }
+  .story__hl { display: grid; gap: .9rem; margin-top: 1.6rem; }
+  .story__hl li { display: flex; gap: .7rem; align-items: flex-start; }
+  .story__hl :global(svg) { width: 1.2rem; height: 1.2rem; flex: none; margin-top: .2rem; color: var(--violet-ink); }
+  @media (min-width: 1000px) { .story { grid-template-columns: 1fr 1fr; gap: 6rem; } }
+
+  .gallery { display: grid; gap: clamp(1rem, 2.5vw, 2rem); padding-bottom: clamp(4.5rem, 9vw, 7rem); }
+  .g { width: 100%; height: auto; border-radius: var(--r-md); box-shadow: var(--shadow); }
+  .g-row { display: grid; gap: clamp(1rem, 2.5vw, 2rem); grid-template-columns: repeat(2, 1fr); align-items: center; }
+  .g--phone { border-radius: 26px; border: 6px solid var(--panel-3); max-width: 300px; justify-self: center; }
+  .g--half { grid-column: 1 / -1; }
+  @media (min-width: 900px) { .g-row { grid-template-columns: 1fr 1fr 2fr; } .g--half { grid-column: auto; } }
+
+  .results__nums { display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin: 1.5rem 0 5rem; }
+  .results__nums strong { display: block; font-size: var(--fs-h2); }
+
+  .nextcase { display: block; text-decoration: none; padding-block: clamp(3.5rem, 8vw, 6rem); background: var(--bg-2); box-shadow: inset 0 1px 0 var(--line); }
+  .nextcase__inner { display: grid; gap: .6rem; }
+  .nextcase__name { display: inline-flex; align-items: center; gap: 1rem; font-family: var(--font-display); font-weight: 600; letter-spacing: -0.045em; line-height: 1; font-size: clamp(2.2rem, 6vw, 5rem); color: var(--ink); transition: color 200ms ease; }
+  .nextcase__name :global(svg) { width: .6em; height: .6em; transition: transform 250ms var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .nextcase:hover .nextcase__name { color: var(--violet-ink); } .nextcase:hover .nextcase__name :global(svg) { transform: translateX(8px); } }
+</style>

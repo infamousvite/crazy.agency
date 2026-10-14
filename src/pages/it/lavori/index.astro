@@ -1,0 +1,19 @@
+---
+import Base from '../../../layouts/Base.astro';
+import WorkView from '../../../views/WorkView.astro';
+import { alt, url } from '../../../i18n';
+import { liveProjects } from '../../../data/projects';
+import { caseListSchema } from '../../../data/seo';
+const site = Astro.site?.toString().replace(/\/$/, '') ?? '';
+---
+<Base
+  lang="it"
+  title="Lavori: siti web realizzati per clienti veri"
+  description="I casi studio di Crazy., web agency di Thiene (VI): il sito multipagina della Gelateria Saimon, la landing in inglese di ScriptKiosk e il laboratorio dei concept."
+  alternates={alt('work')}
+  pageType="CollectionPage"
+  crumbs={[{ name: 'Lavori', path: url('it', 'work') }]}
+  jsonld={[caseListSchema('it', site, site + url('it', 'work'), liveProjects)]}
+>
+  <WorkView lang="it" />
+</Base>

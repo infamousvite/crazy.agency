@@ -1,0 +1,77 @@
+---
+import { tilt } from '../data/tilt';
+import { t, type Lang } from '../i18n';
+import CtaBand from '../components/CtaBand.astro';
+import Person from '../components/Person.astro';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const L = <T,>(v: { it: T; en: T }) => t(lang, v);
+
+const values = [
+  { title: L({ it: 'Su misura, sempre', en: 'Made to measure, always' }), text: L({ it: 'Niente template: ogni sito parte dalla tua attività. Un’animazione al posto giusto, un testo che si legge al volo, un bottone che invita al clic.', en: 'No templates: every site starts from your business. A well-placed animation, copy that reads at a glance, a button that invites the click.' }) },
+  { title: L({ it: 'Belli, ma veloci', en: 'Beautiful, but fast' }), text: L({ it: 'L’effetto wow non deve costare secondi di attesa. Ogni sito è leggero e pensato prima di tutto per il telefono.', en: 'The wow effect shouldn’t cost seconds of waiting. Every site is lightweight and built phone-first.' }) },
+  { title: L({ it: 'Chiari, senza gergo', en: 'Clear, no jargon' }), text: L({ it: 'Preventivi leggibili e parole semplici: sai sempre cosa stai pagando e cosa ricevi.', en: 'Readable quotes and plain words: you always know what you pay for and what you get.' }) },
+  { title: L({ it: 'Pronti per l’AI', en: 'Ready for AI' }), text: L({ it: 'Siti che Google e gli assistenti AI capiscono al primo colpo, perché i clienti cercano anche così.', en: 'Sites that Google and AI assistants understand straight away, because customers search that way too.' }) },
+];
+const steps = [
+  { title: L({ it: 'Ci parliamo', en: 'We talk' }), text: L({ it: 'Una chiacchierata, anche davanti a un caffè se sei in zona, per capire attività, obiettivi e clienti.', en: 'A chat, over coffee if you’re nearby, to understand your business, goals and customers.' }) },
+  { title: L({ it: 'Disegniamo', en: 'We design' }), text: L({ it: 'Struttura e stile: vedi e approvi il sito prima che venga costruito.', en: 'Structure and style: you see and approve the site before it’s built.' }) },
+  { title: L({ it: 'Costruiamo', en: 'We build' }), text: L({ it: 'Codice su misura, animazioni, contenuti e SEO. Ti mostriamo i progressi lungo la strada.', en: 'Custom code, motion, content and SEO. We share progress along the way.' }) },
+  { title: L({ it: 'Apriamo', en: 'We open' }), text: L({ it: 'Messa online, controllo della velocità e miglioramenti nel tempo.', en: 'Go live, speed checks and improvements over time.' }) },
+];
+---
+<section class="page-hero">
+  <div class="wrap">
+    <h1 set:html={tilt(L({ it: 'Piccoli, vicini, pa[z]zi per i dettagli.', en: 'Small, close by, cra[z]y about details.' }))} />
+    <p class="lead">{L({ it: 'Crazy. costruisce siti per attività del territorio e per brand di ogni parte del mondo: dalla gelateria sotto casa al negozio online che spedisce ovunque. Dietro ci sono due persone, Marco e Giorgia: sono loro a risponderti e a costruire il sito.', en: 'Crazy. builds websites for local businesses and for brands anywhere: from the gelato shop around the corner to the online store that ships everywhere. Behind it are two people, Marco and Giorgia: they answer you and build the site.' })}</p>
+  </div>
+</section>
+
+<Person lang={lang} />
+
+<section class="section values" aria-labelledby="values-title">
+  <div class="wrap">
+    <h2 id="values-title" data-reveal>{L({ it: 'Quattro regole che seguiamo.', en: 'Four rules we follow.' })}</h2>
+    <ul class="values__grid">
+      {values.map((v, i) => (
+        <li data-reveal style={`--d:${i * 70}ms`}>
+          <h3>{v.title}</h3>
+          <p>{v.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<section class="section method" aria-labelledby="method-title">
+  <div class="wrap">
+    <h2 id="method-title" data-reveal>{L({ it: 'Come lavoriamo.', en: 'How we work.' })}</h2>
+    <ol class="steps">
+      {steps.map((s, i) => (
+        <li data-reveal style={`--d:${i * 70}ms`}>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<CtaBand lang={lang} />
+
+<style>
+  .values { background: var(--bg-2); box-shadow: inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line); }
+  .values h2, .method h2 { margin-bottom: clamp(2.5rem, 5vw, 3.5rem); }
+  .values__grid { display: grid; gap: 1rem; }
+  .values__grid li { padding: clamp(1.4rem, 2.5vw, 2rem); border-radius: var(--r-lg); background: var(--panel); box-shadow: inset 0 0 0 1px var(--line); }
+  .values__grid h3 { font-size: clamp(1.4rem, 2.2vw, 1.9rem); letter-spacing: -0.035em; color: var(--violet-ink); margin-bottom: .7rem; }
+  .values__grid p { color: var(--ink-2); max-width: 44ch; }
+  @media (min-width: 800px) { .values__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .steps { display: grid; gap: 2rem; counter-reset: s; }
+  .steps li { position: relative; padding-left: 3.4rem; counter-increment: s; }
+  .steps li::before { content: counter(s); position: absolute; left: 0; top: -.2rem; width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border-radius: 999px; background: var(--violet-wash); box-shadow: inset 0 0 0 1px rgb(157 141 241 / 0.3); color: var(--violet-ink); font-family: var(--font-display); font-weight: 600; font-size: .95rem; }
+  .steps h3 { font-size: 1.3rem; letter-spacing: -0.03em; margin-bottom: .45rem; }
+  .steps p { color: var(--ink-2); max-width: 36ch; }
+  @media (min-width: 900px) { .steps { grid-template-columns: repeat(4, 1fr); } .steps li { padding-left: 0; padding-top: 3.6rem; } }
+</style>

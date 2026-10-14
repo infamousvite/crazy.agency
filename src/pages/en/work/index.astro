@@ -1,0 +1,19 @@
+---
+import Base from '../../../layouts/Base.astro';
+import WorkView from '../../../views/WorkView.astro';
+import { alt, url } from '../../../i18n';
+import { liveProjects } from '../../../data/projects';
+import { caseListSchema } from '../../../data/seo';
+const site = Astro.site?.toString().replace(/\/$/, '') ?? '';
+---
+<Base
+  lang="en"
+  title="Work: websites built for real clients"
+  description="Case studies by Crazy., a web agency in Thiene, Italy: the multi-page site for Gelateria Saimon, the English landing page for ScriptKiosk and our concept lab."
+  alternates={alt('work')}
+  pageType="CollectionPage"
+  crumbs={[{ name: 'Work', path: url('en', 'work') }]}
+  jsonld={[caseListSchema('en', site, site + url('en', 'work'), liveProjects)]}
+>
+  <WorkView lang="en" />
+</Base>

@@ -1,0 +1,126 @@
+---
+import { url, caseUrl, t, type Lang } from '../i18n';
+import CtaBand from '../components/CtaBand.astro';
+import { faqs as allFaqs } from '../data/faqs';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const L = <T,>(v: { it: T; en: T }) => t(lang, v);
+
+const services = [
+  {
+    id: 'siti-vetrina',
+    title: L({ it: 'Siti vetrina', en: 'Showcase websites' }),
+    lead: L({ it: 'Il sito che fa fermare chi passa.', en: 'The site that makes passers-by stop.' }),
+    text: L({
+      it: 'Partiamo da chi sei e da chi vuoi raggiungere, poi disegniamo il sito da zero. Animazioni curate, testi chiari e un percorso che porta il visitatore a contattarti.',
+      en: 'We start from who you are and who you want to reach, then design the site from scratch. Crafted motion, clear copy and a path that leads visitors to get in touch.',
+    }),
+    points: L({
+      it: ['Design su misura', 'Perfetto su telefono', 'Animazioni curate', 'Pagine leggere', 'Moduli e prenotazioni'],
+      en: ['Bespoke design', 'Flawless on phones', 'Crafted motion', 'Lightweight pages', 'Forms and bookings'],
+    }),
+    image: '/media/work/saimon-filosofia-d-2.webp', w: 1440, h: 900,
+    caption: L({ it: 'Gelateria Saimon, sito multipagina', en: 'Gelateria Saimon, multi-page website' }),
+    href: caseUrl(lang, 'gelateria-saimon'),
+  },
+  {
+    id: 'e-commerce',
+    title: 'E-commerce',
+    lead: L({ it: 'Un negozio che resta aperto anche di notte.', en: 'A shop that stays open at night.' }),
+    text: L({
+      it: 'Catalogo, schede prodotto, carrello, pagamenti e spedizioni, pensati per chi compra dal telefono. Ti lasciamo un pannello semplice per prodotti e ordini.',
+      en: 'Catalogue, product pages, cart, payments and shipping, designed for people buying on their phone. You get a simple dashboard for products and orders.',
+    }),
+    points: L({
+      it: ['Schede prodotto che convincono', 'Pagamenti sicuri', 'Ordini e spedizioni', 'Collegamento ai social'],
+      en: ['Product pages that convert', 'Secure payments', 'Orders and shipping', 'Social integrations'],
+    }),
+    image: '/media/concept/abbigliamento.webp', w: 960, h: 514,
+    caption: L({ it: 'Atelier, e-commerce concept', en: 'Atelier, e-commerce concept' }),
+    href: url(lang, 'concept'),
+  },
+  {
+    id: 'seo-ai-seo',
+    title: 'SEO & AI SEO',
+    lead: L({ it: 'Farsi trovare su Google, e farsi citare da ChatGPT.', en: 'Get found on Google, and quoted by ChatGPT.' }),
+    text: L({
+      it: 'Sempre più persone cercano chiedendo a un assistente. Lavoriamo su struttura tecnica, contenuti, dati strutturati e scheda Google Business perché la risposta sia il tuo sito.',
+      en: 'More and more people search by asking an assistant. We work on technical structure, content, structured data and your Google Business profile so the answer is your site.',
+    }),
+    points: L({
+      it: ['Analisi tecnica e velocità', 'SEO locale e Google Business', 'Dati strutturati', 'Contenuti che gli AI citano', 'File llms.txt'],
+      en: ['Technical audit and speed', 'Local SEO and Google Business', 'Structured data', 'Content AI can cite', 'llms.txt file'],
+    }),
+  },
+];
+
+const faqs = allFaqs.map((f) => ({ q: t(lang, f.q), a: t(lang, f.a) }));
+---
+<section class="page-hero">
+  <div class="wrap">
+    <h1>{L({ it: 'Tre servizi, un solo scopo: portarti clienti.', en: 'Three services, one purpose: bringing you customers.' })}</h1>
+    <p class="lead">{L({ it: 'Dalla prima idea alla messa online, fino a quando ti trovano su Google e nelle risposte dell’AI.', en: 'From first idea to launch, all the way to being found on Google and in AI answers.' })}</p>
+  </div>
+</section>
+
+<div class="wrap svcs">
+  {services.map((s, i) => (
+    <section class:list={['svc', { 'svc--text': !s.image }]} id={s.id} aria-labelledby={`svc-${i}`}>
+      <div class="svc__body" data-reveal>
+        <h2 class="svc__name" id={`svc-${i}`}>{s.title}</h2>
+        <p class="svc__lead">{s.lead}</p>
+        <p class="svc__text">{s.text}</p>
+        <ul class="svc__points">{s.points.map((p) => <li>{p}</li>)}</ul>
+      </div>
+      {s.image && (
+        <figure class="svc__figure" data-reveal style="--d:120ms">
+          <div class="svc__win"><img src={s.image} alt={s.caption} width={s.w} height={s.h} loading="lazy" decoding="async" /></div>
+          <figcaption><a href={s.href}>{s.caption}</a></figcaption>
+        </figure>
+      )}
+    </section>
+  ))}
+</div>
+
+<section class="section faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <h2 id="faq-title">{L({ it: 'Le domande che ci fanno più spesso.', en: 'The questions we hear most.' })}</h2>
+    <dl class="faq__list">
+      {faqs.map((f) => (
+        <div data-reveal>
+          <dt>{f.q}</dt>
+          <dd>{f.a}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<CtaBand lang={lang} />
+
+<style>
+  .svcs { display: grid; gap: clamp(4rem, 9vw, 7rem); padding-bottom: clamp(3rem, 6vw, 5rem); }
+  .svc { display: grid; gap: 2.5rem; align-items: center; scroll-margin-top: 6rem; }
+  .svc__name { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.04em; line-height: 1; font-size: clamp(2.1rem, 4vw, 3.4rem); color: var(--violet-ink); }
+  .svc__lead { margin: 1rem 0 1rem; max-width: 26ch; font-family: var(--font-text); font-weight: 600; line-height: 1.04; letter-spacing: -0.02em; text-wrap: balance; font-size: clamp(1.3rem, 2vw, 1.7rem); }
+  .svc__text { color: var(--ink-2); max-width: 54ch; }
+  .svc__points { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.6rem; }
+  .svc__points li { padding: .4rem .85rem; border-radius: 999px; background: rgb(22 19 31 / 0.04); box-shadow: inset 0 0 0 1px var(--line); font-size: .93rem; color: var(--ink-2); }
+  .svc__figure { margin: 0; }
+  .svc__win { border-radius: var(--r-lg); overflow: hidden; background: var(--panel); box-shadow: inset 0 0 0 1px var(--line-2), var(--shadow); }
+  .svc__win img { aspect-ratio: 16 / 10; object-fit: cover; object-position: top; width: 100%; height: auto; }
+  .svc__figure figcaption { margin-top: .8rem; font-size: .9rem; color: var(--muted); }
+  .svc__figure figcaption a { color: inherit; }
+  @media (min-width: 900px) {
+    .svc { grid-template-columns: 1fr 1.1fr; gap: 5rem; }
+    .svc:nth-child(2) .svc__body { order: 2; }
+    .svc--text { grid-template-columns: 1fr; }
+    .svc--text .svc__body { max-width: 760px; margin-left: auto; }
+  }
+  .faq h2 { margin-bottom: 2.5rem; }
+  .faq__list { display: grid; gap: 2rem 4rem; margin: 0; }
+  .faq__list dt { font-weight: 600; font-size: 1.15rem; letter-spacing: -0.01em; }
+  .faq__list dd { margin: .5rem 0 0; color: var(--ink-2); max-width: 58ch; }
+  @media (min-width: 860px) { .faq__list { grid-template-columns: 1fr 1fr; } }
+</style>

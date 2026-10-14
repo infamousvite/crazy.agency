@@ -1,0 +1,15 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ConceptView from '../../../views/ConceptView.astro';
+import { alt, url } from '../../../i18n';
+---
+<Base
+  lang="it"
+  title="Laboratorio: concept di siti web e landing 3D"
+  description="Progetti dimostrativi di Crazy., non commissionati da clienti: landing 3D, e-commerce e siti vetrina per gioiellerie, farmacie, imprese edili, dentisti e altro."
+  alternates={alt('concept')}
+  pageType="CollectionPage"
+  crumbs={[{ name: 'Lavori', path: url('it', 'work') }, { name: 'Laboratorio', path: url('it', 'concept') }]}
+>
+  <ConceptView lang="it" />
+</Base>

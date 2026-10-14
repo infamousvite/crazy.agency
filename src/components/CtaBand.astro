@@ -1,0 +1,67 @@
+---
+/**
+ * Chiusura di pagina: "Facciamo qualcosa di folle?" e un grande bottone
+ * rotondo con la scritta che gira. Il bottone segue appena il mouse
+ * (calamita) e al passaggio si riempie: invita al clic senza luci al neon.
+ */
+import { url, ui, t, type Lang } from '../i18n';
+import Icon from './Icon.astro';
+import { tilt } from '../data/tilt';
+interface Props { lang: Lang; title?: string; text?: string }
+const { lang, title, text } = Astro.props;
+const ring = t(lang, { it: 'Fai il preventivo · Un minuto · Su misura · ', en: 'Get a quote · One minute · Made to measure · ' });
+const id = `ring-${Math.random().toString(36).slice(2, 8)}`;
+---
+<section class="folle">
+  <div class="wrap folle__inner">
+    <div class="folle__copy">
+      <h2 set:html={tilt(title ?? t(lang, { it: 'Facciamo qualcosa di folle[?]', en: 'Shall we do something crazy[?]' }))} />
+      <p class="lead">{text ?? t(lang, { it: 'Tre domande, un minuto. Ti rispondiamo con una proposta su misura, senza impegno.', en: 'Three questions, one minute. We reply with a tailored proposal, no strings attached.' })}</p>
+    </div>
+    <a class="orb" href={url(lang, 'contact')} data-magnet aria-label={t(lang, ui.common.quote)}>
+      <svg class="orb__ring" viewBox="0 0 200 200" aria-hidden="true">
+        <defs><path id={id} d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0" /></defs>
+        <text><textPath href={`#${id}`} textLength="512">{ring}</textPath></text>
+      </svg>
+      <span class="orb__core" data-magnet-core><Icon name="arrow-up-right" /></span>
+    </a>
+  </div>
+</section>
+<style>
+  /* il punto di domanda piega la testa, come chi aspetta una risposta */
+  .folle h2 :global(.tilt) { --tilt: 16deg; }
+  .folle { padding-block: clamp(5rem, 10vw, 8rem); background: var(--violet); color: var(--on-violet); }
+  .folle .lead { color: rgb(22 19 31 / 0.78); }
+  .folle__inner { display: grid; gap: 3rem; align-items: center; justify-items: start; }
+  .folle h2 { font-size: clamp(2.5rem, 7.4vw, 5.6rem); font-weight: 700; letter-spacing: -0.045em; line-height: .98; max-width: 11ch; }
+  .folle .lead { margin-top: 1.5rem; max-width: 40ch; }
+
+  .orb { position: relative; display: grid; place-items: center; width: clamp(12rem, 22vw, 16rem); aspect-ratio: 1; border-radius: 50%; text-decoration: none; color: var(--on-violet); justify-self: center; -webkit-tap-highlight-color: transparent; }
+  .orb__ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .orb__ring text { font-family: var(--font-display); font-weight: 500; font-size: 14.5px; letter-spacing: .02em; fill: var(--on-violet); }
+  .orb__core {
+    position: relative; display: grid; place-items: center; width: 52%; aspect-ratio: 1; border-radius: 50%;
+    background: var(--ink); color: var(--violet);
+    box-shadow: 0 18px 40px -20px rgb(22 19 31 / 0.6);
+    transition: transform 420ms var(--ease-out), background-color 250ms ease;
+  }
+  .orb__core :global(svg) { width: 34%; height: 34%; transition: transform 420ms var(--ease-out); }
+  .orb:active .orb__core { transform: scale(0.95); }
+  .orb:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .orb__ring { animation: orbSpin 22s linear infinite; }
+    .orb__core { animation: orbPulse 2.8s var(--ease-in-out) infinite; }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .orb:hover .orb__core { transform: scale(1.32); background: #fff; color: var(--ink); animation-play-state: paused; }
+    .orb:hover .orb__core :global(svg) { transform: rotate(45deg); }
+    .orb:hover .orb__ring { animation-duration: 9s; }
+  }
+  @keyframes orbSpin { to { transform: rotate(360deg); } }
+  @keyframes orbPulse { 0%, 100% { scale: 1; } 50% { scale: 1.06; } }
+
+  @media (min-width: 900px) {
+    .folle__inner { grid-template-columns: 1fr auto; gap: 4rem; }
+    .orb { justify-self: end; margin-right: 2rem; }
+  }
+</style>

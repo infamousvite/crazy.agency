@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import ServicesView from '../../views/ServicesView.astro';
+import { alt, url } from '../../i18n';
+import { faqSchema } from '../../data/seo';
+const site = Astro.site?.toString().replace(/\/$/, '') ?? '';
+---
+<Base
+  lang="it"
+  title="Siti vetrina, e-commerce, SEO e AI SEO a Thiene (VI)"
+  description={`Landing page, siti multipagina, e-commerce e SEO & AI SEO per farti trovare su Google e su ChatGPT. Siti su misura da una web agency di Thiene (VI).`}
+  alternates={alt('services')}
+  crumbs={[{ name: 'Servizi', path: url('it', 'services') }]}
+  jsonld={[faqSchema('it', site + url('it', 'services'))]}
+>
+  <ServicesView lang="it" />
+</Base>

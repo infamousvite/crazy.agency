@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import ContactView from '../../views/ContactView.astro';
+import { alt, url } from '../../i18n';
+import { pricing, formatEuro } from '../../data/site';
+const e = (n: number) => formatEuro(n, 'it');
+---
+<Base
+  lang="it"
+  title="Contatti e preventivo per il tuo sito web"
+  description={`Fai il preventivo in un minuto: landing da ${e(pricing.landing)}, sito multipagina da ${e(pricing.multipage)} o e-commerce da ${e(pricing.ecommerce)}. Oppure scrivici su WhatsApp. Crazy., Thiene (VI).`}
+  alternates={alt('contact')}
+  pageType="ContactPage"
+  crumbs={[{ name: 'Contatti', path: url('it', 'contact') }]}
+>
+  <ContactView lang="it" />
+</Base>

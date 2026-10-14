@@ -1,0 +1,28 @@
+---
+import Base from '../../../layouts/Base.astro';
+import CaseView from '../../../views/CaseView.astro';
+import { altCase, url, caseUrl, t } from '../../../i18n';
+import { liveProjects, type Project } from '../../../data/projects';
+import { caseSchema } from '../../../data/seo';
+
+export function getStaticPaths() {
+  return liveProjects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}
+const { project } = Astro.props as { project: Project };
+const site = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const kind = project.services[0] ? t('en', project.services[0]).toLowerCase() : '';
+const title = `${project.client}${project.location ? `, ${project.location}` : ''}${kind ? `: ${kind}` : ''}`;
+const description = `${t('en', project.blurb)} ${t('en', { it: 'Caso studio di Crazy., web agency di Thiene.', en: 'Case study by Crazy., web agency in Thiene, Italy.' })}`;
+---
+<Base
+  lang="en"
+  title={title}
+  description={description}
+  alternates={altCase(project.slug)}
+  image={project.media.poster}
+  imageAlt={`${project.client}: ${t('en', project.title)}`}
+  crumbs={[{ name: 'Work', path: url('en', 'work') }, { name: project.client, path: caseUrl('en', project.slug) }]}
+  jsonld={[caseSchema('en', site, project)]}
+>
+  <CaseView lang="en" project={project} />
+</Base>

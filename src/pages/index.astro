@@ -1,0 +1,21 @@
+---
+// La radice porta alla lingua del browser (italiano di default).
+const site = Astro.site?.toString().replace(/\/$/, '') ?? '';
+---
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <title>Crazy. | Web agency a Thiene (Vicenza)</title>
+    <meta name="description" content="Crazy. è una web agency di Thiene (Vicenza): siti vetrina, e-commerce, SEO e AI SEO su misura. Italiano · English." />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="canonical" href={`${site}/it/`} />
+    <meta http-equiv="refresh" content="0; url=/it/" />
+    <script is:inline>
+      var l = (navigator.language || 'it').slice(0, 2).toLowerCase();
+      location.replace(l === 'it' ? '/it/' : '/en/');
+    </script>
+    <style>html{background:#f4f2fa}</style>
+  </head>
+  <body><a href="/it/">Italiano</a> · <a href="/en/">English</a></body>
+</html>

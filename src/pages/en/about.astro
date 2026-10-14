@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro';
+import AboutView from '../../views/AboutView.astro';
+import { alt, url } from '../../i18n';
+---
+<Base
+  lang="en"
+  title="About: Marco and Giorgia, web agency in Thiene, Italy"
+  description="Crazy. is the web agency of Marco and Giorgia, based in Thiene (Vicenza, Italy). We design and build made-to-measure websites for local businesses and brands worldwide."
+  alternates={alt('about')}
+  pageType="AboutPage"
+  crumbs={[{ name: 'About', path: url('en', 'about') }]}
+>
+  <AboutView lang="en" />
+</Base>

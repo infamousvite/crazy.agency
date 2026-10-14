@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import HomeView from '../../views/HomeView.astro';
+import { alt } from '../../i18n';
+---
+<Base
+  lang="it"
+  title="Crazy. | Web agency a Thiene (Vicenza): siti su misura"
+  description={`Crazy. è una web agency di Thiene (VI): siti vetrina, e-commerce, SEO e AI SEO. Su misura, mai da template. Clienti in Italia e all’estero.`}
+  alternates={alt('home')}
+>
+  <HomeView lang="it" />
+</Base>

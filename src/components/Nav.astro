@@ -1,0 +1,90 @@
+---
+import { url, ui, t, type Lang, type Alternates } from '../i18n';
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+import { site } from '../data/site';
+interface Props { lang: Lang; alternates: Alternates }
+const { lang, alternates } = Astro.props;
+const path = Astro.url.pathname;
+const links = [
+  { href: url(lang, 'work'), label: t(lang, ui.nav.work) },
+  { href: url(lang, 'services'), label: t(lang, ui.nav.services) },
+  { href: url(lang, 'concept'), label: lang === 'it' ? 'Laboratorio' : 'Lab' },
+  { href: url(lang, 'about'), label: t(lang, ui.nav.about) },
+];
+const isCurrent = (href: string) => path.startsWith(href) && !(href === url(lang, 'work') && path.startsWith(url(lang, 'concept')));
+const other: Lang = lang === 'it' ? 'en' : 'it';
+---
+<header class="nav" data-nav>
+  <div class="nav__island">
+    <a href={url(lang, 'home')} class="nav__logo" aria-label="Crazy. home"><Logo label="" hover /></a>
+    <nav class="nav__links" aria-label={lang === 'it' ? 'Principale' : 'Main'}>
+      {links.map((l) => <a href={l.href} aria-current={isCurrent(l.href) ? 'page' : undefined}>{l.label}</a>)}
+    </nav>
+    <div class="nav__right">
+      <a class="nav__lang" href={alternates[other]} hreflang={other} lang={other}>
+        {other.toUpperCase()}<span class="sr-only">{lang === 'it' ? ' (English version)' : ' (versione italiana)'}</span>
+      </a>
+      <a href={url(lang, 'contact')} class="nav__cta"><span class="nav__cta-long">{t(lang, ui.nav.cta)}</span><span class="nav__cta-short">{lang === 'it' ? 'Preventivo' : 'Quote'}</span></a>
+      <button class="nav__burger" type="button" aria-expanded="false" aria-controls="menu" data-burger>
+        <span class="nav__bar"></span><span class="nav__bar"></span>
+        <span class="sr-only">{t(lang, ui.nav.menu)}</span>
+      </button>
+    </div>
+  </div>
+  <div class="menu" id="menu" hidden data-menu>
+    <nav class="menu__links" aria-label="Menu">
+      {links.map((l, i) => <a href={l.href} style={`--i:${i}`}>{l.label}</a>)}
+      <a class="menu__cta" href={url(lang, 'contact')} style={`--i:${links.length}`}>{t(lang, ui.nav.cta)} <Icon name="arrow-up-right" /></a>
+      {site.whatsapp && <a class="menu__wa" href={`https://wa.me/${site.whatsapp}`} target="_blank" rel="noopener" style={`--i:${links.length + 1}`}><Icon name="whatsapp-logo" /> WhatsApp</a>}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .nav { position: fixed; inset: 0.75rem 0 auto 0; z-index: 100; padding-inline: clamp(.75rem, 2.5vw, 1.5rem); pointer-events: none; }
+  .nav__island {
+    pointer-events: auto; position: relative; z-index: 2;
+    display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+    max-width: 1180px; margin-inline: auto; height: 3.6rem; padding: 0 .5rem 0 1.25rem; border-radius: 999px;
+    background: rgb(255 255 255 / 0.62); backdrop-filter: blur(14px) saturate(160%);
+    box-shadow: inset 0 0 0 1px var(--line), 0 10px 30px -18px rgb(58 40 130 / 0.25);
+    transition: background-color 300ms ease, box-shadow 300ms ease;
+  }
+  .nav.is-solid .nav__island { background: rgb(255 255 255 / 0.9); box-shadow: inset 0 0 0 1px var(--line-2), 0 18px 40px -22px rgb(58 40 130 / 0.3); }
+  .nav__cta-long { display: none; }
+  .nav__logo { display: inline-flex; align-items: center; min-height: 2.75rem; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; letter-spacing: -0.04em; text-decoration: none; }
+  .nav__links { display: none; gap: .25rem; }
+  .nav__links a { padding: .5rem .85rem; border-radius: 999px; text-decoration: none; font-weight: 500; font-size: .96rem; color: var(--ink-2); transition: color 200ms ease, background-color 200ms ease; }
+  .nav__links a[aria-current='page'] { color: var(--ink); background: rgb(22 19 31 / 0.06); }
+  @media (hover: hover) and (pointer: fine) { .nav__links a:hover { color: var(--ink); } .nav__lang:hover { color: var(--ink); } .nav__cta:hover { background: var(--violet-2); } }
+  .nav__right { display: flex; align-items: center; gap: .35rem; }
+  .nav__lang { display: inline-grid; place-items: center; min-width: 2.75rem; min-height: 2.75rem; padding: 0 .5rem; font-size: .85rem; font-weight: 600; color: var(--muted); text-decoration: none; transition: color 200ms ease; }
+  .nav__cta { display: inline-flex; align-items: center; height: 2.75rem; padding: 0 1.15rem; border-radius: 999px; background: var(--violet); color: var(--on-violet); font-weight: 600; font-size: .95rem; text-decoration: none; transition: background-color 200ms ease, transform 160ms var(--ease-out); }
+  .nav__cta:active { transform: scale(0.97); }
+  .nav__burger { position: relative; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 999px; background: rgb(22 19 31 / 0.06); cursor: pointer; }
+  .nav__bar { position: absolute; left: 50%; top: 50%; width: 1.05rem; height: 1.5px; margin-left: -.525rem; background: var(--ink); border-radius: 2px; transition: transform 320ms var(--ease-out); }
+  .nav__bar:first-child { transform: translateY(-3.5px); }
+  .nav__bar:nth-child(2) { transform: translateY(3.5px); }
+  .nav__burger[aria-expanded='true'] .nav__bar:first-child { transform: rotate(45deg); }
+  .nav__burger[aria-expanded='true'] .nav__bar:nth-child(2) { transform: rotate(-45deg); }
+
+  .menu { pointer-events: auto; position: fixed; inset: 0; z-index: 1; background: rgb(244 242 250 / 0.94); backdrop-filter: blur(24px); padding: 7rem var(--gutter) 2rem; }
+  .menu__links { display: grid; gap: .3rem; }
+  .menu__links a { font-family: var(--font-display); font-weight: 600; font-size: clamp(2rem, 9vw, 3rem); letter-spacing: -0.035em; line-height: 1.15; text-decoration: none; }
+  .menu__cta { display: inline-flex; align-items: center; gap: .6rem; margin-top: 1.2rem; color: var(--violet-ink); font-size: clamp(1.3rem, 6vw, 1.8rem) !important; }
+  .menu__cta :global(svg) { width: .9em; height: .9em; }
+  .menu__wa { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-text) !important; font-weight: 550 !important; font-size: 1.15rem !important; letter-spacing: 0 !important; color: var(--ink-2); min-height: 2.75rem; }
+  .menu__wa :global(svg) { width: 1.3rem; height: 1.3rem; }
+  @media (prefers-reduced-motion: no-preference) {
+    .menu__links a { animation: menuIn 520ms var(--ease-out) both; animation-delay: calc(var(--i) * 45ms + 60ms); }
+  }
+  @keyframes menuIn { from { opacity: 0; transform: translateY(22px); } }
+
+  @media (min-width: 960px) {
+    .nav__links { display: flex; }
+    .nav__cta-long { display: inline; }
+    .nav__cta-short { display: none; }
+    .nav__burger { display: none; }
+  }
+</style>

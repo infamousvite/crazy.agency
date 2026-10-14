@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import HomeView from '../../views/HomeView.astro';
+import { alt } from '../../i18n';
+---
+<Base
+  lang="en"
+  title="Crazy. | Web agency in Thiene, Italy: bespoke websites"
+  description={`Crazy. is a web agency in Thiene (Vicenza, Italy): showcase websites, e-commerce, SEO and AI SEO. Made to measure, never from a template. Clients worldwide.`}
+  alternates={alt('home')}
+>
+  <HomeView lang="en" />
+</Base>

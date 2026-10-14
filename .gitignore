@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.astro/
+.env
+.DS_Store
+
+# strumenti di lavoro (skill, assistenti, catture di revisione): non fanno parte del sito
+.claude/
+.agents/
+.codex/
+Claude outputs/
+skills-lock.json
+.impeccable/review/
+.impeccable/hook.cache.json
+
+# file locali, non servono online
+skill-claude.zip

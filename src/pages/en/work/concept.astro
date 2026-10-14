@@ -1,0 +1,15 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ConceptView from '../../../views/ConceptView.astro';
+import { alt, url } from '../../../i18n';
+---
+<Base
+  lang="en"
+  title="The lab: website concepts and 3D landing pages"
+  description="Demo projects by Crazy., not commissioned by clients: 3D landing pages, e-commerce and showcase sites for jewellers, pharmacies, builders, dentists and more."
+  alternates={alt('concept')}
+  pageType="CollectionPage"
+  crumbs={[{ name: 'Work', path: url('en', 'work') }, { name: 'The lab', path: url('en', 'concept') }]}
+>
+  <ConceptView lang="en" />
+</Base>
